@@ -1,8 +1,6 @@
 // This adds support for typescript paths mappings
 import 'tsconfig-paths/register';
-
 import './helpers/hardhat-imports';
-
 import path from 'path';
 
 import { hardhatNamedAccounts } from '@scaffold-eth/common/src/constants';
@@ -78,7 +76,7 @@ export const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: '0.8.10',
+        version: '0.8.16',
         settings: {
           optimizer: {
             enabled: true,
