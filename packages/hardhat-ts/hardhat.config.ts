@@ -22,7 +22,7 @@ import { getMnemonic } from './tasks/functions/mnemonic';
  */
 
 // this loads the .env file into process.env
-envConfig({ path: '../vite-app-ts/.env' });
+envConfig({ path: '../next-app-ts/.env' });
 
 /**
  * this loads all the tasks from the tasks folder
@@ -76,7 +76,7 @@ export const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: '0.8.16',
+        version: '0.8.14',
         settings: {
           optimizer: {
             enabled: true,
