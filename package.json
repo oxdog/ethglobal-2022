@@ -10,11 +10,8 @@
   ],
   "private": true,
   "scripts": {
-    "@🔖🔖🔖🔖🔖 react 🔖🔖🔖🔖🔖 ": "echo 📖 react vite-app commands",
-    "start": "yarn start:vite",
-    "build": "yarn build:vite",
-    "start:vite": "yarn workspace @scaffold-eth/vite-app start",
-    "build:vite": "yarn workspace @scaffold-eth/vite-app build",
+    "start": "yarn start:nextjs",
+    "build": "yarn build:nextjs",
     "@🔖🔖🔖🔖🔖 nextjs 🔖🔖🔖🔖🔖 ": "echo 📖 react nextjs-app commands",
     "start:nextjs": "yarn workspace @scaffold-eth/nextjs-app dev",
     "build:nextjs": "yarn workspace @scaffold-eth/nextjs-app build",
@@ -29,7 +26,6 @@
     "test": "yarn workspace @scaffold-eth/hardhat test",
     "@🔖🔖🔖🔖🔖 workspaces 🔖🔖🔖🔖🔖 ": "echo 📖 workspace commands",
     "w:hardhat": "yarn workspace @scaffold-eth/hardhat",
-    "w:vite": "yarn workspace @scaffold-eth/vite-app",
     "w:nextjs": "yarn workspace @scaffold-eth/nextjs-app",
     "w:subgraph": "yarn workspace @scaffold-eth/subgraph",
     "@🔖🔖🔖🔖🔖 ethereum helpers 🔖🔖🔖🔖🔖": "echo 📖 ethereum helper commands",
@@ -48,13 +44,13 @@
     "@🔖🔖🔖🔖🔖 dev linking with yalc 🔖🔖🔖🔖🔖": "echo 📖 dev tools",
     "dev:link:components": "yarn workspace @scaffold-eth/vite-app dev:link:components && yarn workspace @scaffold-eth/common dev:link:components",
     "dev:link:hooks": "yarn workspace @scaffold-eth/vite-app dev:link:hooks && yarn workspace @scaffold-eth/common dev:link:hooks",
-    "dev:unlink": "yarn workspace @scaffold-eth/vite-app dev:unlink && yarn workspace @scaffold-eth/vite-app dev:unlink && yarn workspace @scaffold-eth/common dev:unlink && yarn workspace @scaffold-eth/common dev:unlink"
+    "dev:unlink": "yarn workspace @scaffold-eth/vite-app dev:unlink && yarn workspace @scaffold-eth/vite-app dev:unlink && yarn workspace @scaffold-eth/common dev:unlink && yarn workspace @scaffold-eth/common dev:unlink",
+    "commit": "git-cz"
   },
   "workspaces": {
     "packages": [
       "packages/common",
       "packages/hardhat-ts",
-      "packages/vite-app-ts",
       "packages/next-app-ts",
       "packages/advanced/subgraph",
       "packages/advanced/services/*",
@@ -65,6 +61,7 @@
   "devDependencies": {
     "cross-env": "^7.0.3",
     "eslint": "^8.20.0",
+    "git-cz": "^4.9.0",
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "prettier": "^2.7.1",
@@ -74,10 +71,6 @@
     "ts-node": "^10.9.1"
   },
   "lint-staged": {
-    "packages/vite-app-ts/src/**/*.{ts,tsx}": [
-      "yarn workspace @scaffold-eth/vite-app lint --fix",
-      "yarn workspace @scaffold-eth/vite-app format"
-    ],
     "packages/nextjs-app-ts/src/**/*.{ts,tsx}": [
       "yarn workspace @scaffold-eth/nextjs-app lint --fix",
       "yarn workspace @scaffold-eth/nextjs-app format"
