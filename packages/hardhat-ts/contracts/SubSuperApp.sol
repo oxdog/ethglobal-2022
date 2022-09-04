@@ -12,6 +12,9 @@ import {
 import { CFAv1Library } from "@superfluid-finance/ethereum-contracts/contracts/apps/CFAv1Library.sol";
 import { IConstantFlowAgreementV1 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 import { SuperAppBase } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "@openzeppelin/contracts/utils/Counters.sol";
 
 import { SubscriptionAccess } from "./Subscription.sol";
 
@@ -27,22 +30,34 @@ error InvalidToken();
 /// @dev Thrown when the agreement is other than the Constant Flow Agreement V1
 error InvalidAgreement();
 
-contract Subscription_SuperApp is SuperAppBase, SubscriptionAccess {
+contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
   using CFAv1Library for CFAv1Library.InitData;
-  CFAv1Library.InitData public cfaV1Lib;
+  using Counters for Counters.Counter;
 
+  CFAv1Library.InitData public cfaV1Lib;
   ISuperToken internal immutable _acceptedToken;
+  Counters.Counter private passTracker;
+  ISuperfluid private host;
+
+  // User => tokenId
+  /// @dev Active Pass Registry of Subscribers, 0 means no active pass
+  mapping(address => uint256) public activePass;
+
+  // tokenId => active
+  /// @dev State Registry of Pass
+  mapping(uint256 => bool) public passState;
 
   constructor(
-    ISuperfluid host,
+    ISuperfluid _host,
     ISuperToken acceptedToken,
     string memory _name,
     string memory _symbol
-  ) SubscriptionAccess(_name, _symbol) {
-    assert(address(host) != address(0));
+  ) ERC721(_name, _symbol) {
+    assert(address(_host) != address(0));
     assert(address(acceptedToken) != address(0));
 
     _acceptedToken = acceptedToken;
+    host = _host;
 
     cfaV1Lib = CFAv1Library.InitData({ host: host, cfa: IConstantFlowAgreementV1(address(host.getAgreementClass(CFA_ID))) });
 
@@ -55,6 +70,8 @@ contract Subscription_SuperApp is SuperAppBase, SubscriptionAccess {
         SuperAppDefinitions.BEFORE_AGREEMENT_UPDATED_NOOP |
         SuperAppDefinitions.BEFORE_AGREEMENT_TERMINATED_NOOP
     );
+
+    passTracker.increment(); //start passId at 1
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -82,11 +99,8 @@ contract Subscription_SuperApp is SuperAppBase, SubscriptionAccess {
     bytes calldata, // _cbdata,
     bytes calldata _ctx
   ) external override onlyExpected(_superToken, _agreementClass) onlyHost returns (bytes memory newCtx) {
-    console.log("afterAgreementCreated called");
-
     (address sender, ) = abi.decode(_agreementData, (address, address));
     _issuePass(sender);
-
     newCtx = _ctx;
   }
 
@@ -106,19 +120,51 @@ contract Subscription_SuperApp is SuperAppBase, SubscriptionAccess {
     ISuperToken _superToken,
     address _agreementClass,
     bytes32, // _agreementId,
-    bytes calldata, // _agreementData
+    bytes calldata _agreementData,
     bytes calldata, // _cbdata,
     bytes calldata _ctx
   ) external override onlyHost returns (bytes memory newCtx) {
     console.log("afterAgreementTerminated called");
+    // (address sender, ) = abi.decode(_agreementData, (address, address));
+    // activePass[sender] = 0;
+
+    ISuperfluid.Context memory decompiledContext = host.decodeCtx(_ctx);
+    uint256 mode = abi.decode(decompiledContext.userData, (uint256));
+    console.log("mode", mode);
+
     newCtx = _ctx;
   }
 
+  // ---------------------------------------------------------------------------------------------
+  // Pass Logic
+  function _issuePass(address to) internal {
+    require(activePass[to] == 0, "SFA: Subscriber has active pass");
+    uint256 passId = passTracker.current();
+    _safeMint(to, passId, "");
+    activePass[to] = passId;
+    passState[passId] = true;
+    passTracker.increment();
+  }
+
   function _beforeTokenTransfer(
-    address, // from
+    address from,
     address to,
-    uint256 // tokenId
-  ) internal override {
-    console.log("_beforeTokenTransfer called");
+    uint256 tokenId
+  ) internal override(ERC721, ERC721Enumerable) {
+    super._beforeTokenTransfer(from, to, tokenId);
+
+    if (from == address(0) && from != to) {
+      if (activePass[from] == tokenId) {
+        activePass[from] = 0;
+        passState[tokenId] = false;
+
+        bytes memory _data = abi.encode(1);
+        cfaV1Lib.deleteFlow(from, address(this), _acceptedToken, _data);
+      }
+    }
+  }
+
+  function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
+    super.supportsInterface(interfaceId);
   }
 }

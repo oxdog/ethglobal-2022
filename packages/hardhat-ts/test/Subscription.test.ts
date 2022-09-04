@@ -23,13 +23,24 @@ describe('Subscription', function () {
 
   let deployer: SignerWithAddress
   let user1: SignerWithAddress
+  let user2: SignerWithAddress
 
   let sub: Subscription_SuperApp
+
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+  const createFlow = () =>
+    sf.cfaV1.createFlow({
+      receiver: sub.address,
+      superToken: daix.address,
+      flowRate: '110000000',
+      overrides: { gasLimit: 1_000_000 },
+    })
 
   before(async () => {
     const signers = await getHardhatSigners(hre)
     deployer = signers.deployer
     user1 = signers.user1
+    user2 = signers.user2
 
     //* Deploy Superfluid
     contractsFramework = await deployFramework(deployer)
@@ -66,12 +77,7 @@ describe('Subscription', function () {
 
   describe('Superapp Callbacks', function () {
     it('Create', async () => {
-      const createFlowOperation = sf.cfaV1.createFlow({
-        receiver: sub.address,
-        superToken: daix.address,
-        flowRate: '100000000',
-        overrides: { gasLimit: 1_000_000 },
-      })
+      const createFlowOperation = createFlow()
 
       const updateFlowOperation = sf.cfaV1.updateFlow({
         receiver: sub.address,
@@ -95,18 +101,69 @@ describe('Subscription', function () {
   })
 
   describe('Pass Issuance', function () {
+    it('PassId starts at 1', async () => {
+      expect(await sub.balanceOf(user1.address)).to.be.equal(0)
+
+      const createFlowOperation = createFlow()
+      await createFlowOperation.exec(user1)
+
+      await expect(sub.ownerOf(0)).to.be.revertedWith('ERC721: invalid token ID')
+      expect(await sub.ownerOf(1)).to.be.equal(user1.address)
+      expect(await sub.tokenOfOwnerByIndex(user1.address, 0)).to.be.equal(1)
+    })
+
     it('Issue Pass on Stream creation', async () => {
       expect(await sub.balanceOf(user1.address)).to.be.equal(0)
 
-      const createFlowOperation = sf.cfaV1.createFlow({
-        receiver: sub.address,
-        superToken: daix.address,
-        flowRate: '110000000',
-        overrides: { gasLimit: 1_000_000 },
-      })
+      const createFlowOperation = createFlow()
       await createFlowOperation.exec(user1)
 
       expect(await sub.balanceOf(user1.address)).to.be.equal(1)
     })
+
+    it('Set active pass on mint', async () => {
+      const createFlowOperation = createFlow()
+      await createFlowOperation.exec(user1)
+
+      expect(await sub.activePass(user1.address)).to.be.equal(1)
+    })
+
+    it('Remove active pass on transfer', async () => {
+      const PASS_ID = 1
+      const createFlowOperation = createFlow()
+      await createFlowOperation.exec(user1)
+
+      expect(await sub.activePass(user1.address)).to.be.equal(PASS_ID)
+      await sub.connect(user1).transferFrom(user1.address, user2.address, 1, { gasLimit: 1_000_000 })
+      expect(await sub.activePass(user1.address)).to.be.equal(0)
+    })
+
+    it.skip('Make pass inactive on transfer', async () => {})
+
+    it('Cancel Stream on active pass transfer', async () => {
+      const createFlowOperation = createFlow()
+      await createFlowOperation.exec(user1)
+      let ownerContractFlowRate = await sf.cfaV1.getFlow({
+        superToken: daix.address,
+        sender: user1.address,
+        receiver: sub.address,
+        providerOrSigner: user1,
+      })
+      expect(ownerContractFlowRate, '110000000')
+
+      await sub.connect(user1).transferFrom(user1.address, user2.address, 1, { gasLimit: 1_000_000 })
+
+      ownerContractFlowRate = await sf.cfaV1.getFlow({
+        superToken: daix.address,
+        sender: user1.address,
+        receiver: sub.address,
+        providerOrSigner: user1,
+      })
+      expect(ownerContractFlowRate, '0')
+    })
+
+    it.skip("Can't create two streams or two passes", async () => {})
+    it.skip("Don't cancel Stream on inactive pass transfer", async () => {})
+    it.skip('Deactive pass on cancel stream', async () => {})
   })
 })
