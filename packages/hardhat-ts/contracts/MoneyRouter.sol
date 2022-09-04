@@ -40,6 +40,7 @@ contract MoneyRouter {
     int96 flowRate
   ) external onlyOwner {
     cfaV1.createFlow(receiver, token, flowRate);
+    console.log("Create flow");
   }
 
   /// @notice Create a stream into the contract.

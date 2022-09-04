@@ -1,16 +1,16 @@
 // This adds support for typescript paths mappings
-import 'tsconfig-paths/register';
-import './helpers/hardhat-imports';
-import path from 'path';
+import 'tsconfig-paths/register'
+import './helpers/hardhat-imports'
+import path from 'path'
 
-import { hardhatNamedAccounts } from '@scaffold-eth/common/src/constants';
-import { getNetworks } from '@scaffold-eth/common/src/functions';
-import { config as envConfig } from 'dotenv';
-import glob from 'glob';
-import { removeConsoleLog } from 'hardhat-preprocessor';
-import { HardhatUserConfig } from 'hardhat/config';
+import { hardhatNamedAccounts } from '@scaffold-eth/common/src/constants'
+import { getNetworks } from '@scaffold-eth/common/src/functions'
+import { config as envConfig } from 'dotenv'
+import glob from 'glob'
+import { removeConsoleLog } from 'hardhat-preprocessor'
+import { HardhatUserConfig } from 'hardhat/config'
 
-import { getMnemonic } from './tasks/functions/mnemonic';
+import { getMnemonic } from './tasks/functions/mnemonic'
 
 /**
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -22,21 +22,21 @@ import { getMnemonic } from './tasks/functions/mnemonic';
  */
 
 // this loads the .env file into process.env
-envConfig({ path: '../next-app-ts/.env' });
+envConfig({ path: '../next-app-ts/.env' })
 
 /**
  * this loads all the tasks from the tasks folder
  */
 if (process.env.BUILDING !== 'true') {
   glob.sync('./tasks/**/*.ts').forEach((file: string) => {
-    require(path.resolve(file));
-  });
+    require(path.resolve(file))
+  })
 }
 
 /**
  * Set your target network!!!
  */
-console.log('HARDHAT_TARGET_NETWORK: ', process.env.HARDHAT_TARGET_NETWORK);
+console.log('HARDHAT_TARGET_NETWORK: ', process.env.HARDHAT_TARGET_NETWORK)
 
 /**
  * loads network list and config from '@scaffold-eth/common/src
@@ -57,14 +57,14 @@ const networks = {
     //   mnemonic: getMnemonic(),
     // },
   },
-};
+}
 
 /**
  * See {@link hardhatNamedAccounts} to define named accounts
  */
 const namedAccounts = hardhatNamedAccounts as {
-  [name: string]: string | number | { [network: string]: null | number | string };
-};
+  [name: string]: string | number | { [network: string]: null | number | string }
+}
 
 export const config: HardhatUserConfig = {
   preprocess: {
@@ -111,6 +111,7 @@ export const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
+    enabled: false,
     coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     currency: 'USD',
   },
@@ -131,5 +132,5 @@ export const config: HardhatUserConfig = {
     outDir: './generated/contract-types',
     discriminateTypes: true,
   },
-};
-export default config;
+}
+export default config
