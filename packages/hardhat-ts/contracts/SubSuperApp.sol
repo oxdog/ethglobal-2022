@@ -13,6 +13,8 @@ import { CFAv1Library } from "@superfluid-finance/ethereum-contracts/contracts/a
 import { IConstantFlowAgreementV1 } from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 import { SuperAppBase } from "@superfluid-finance/ethereum-contracts/contracts/apps/SuperAppBase.sol";
 
+import { SubscriptionAccess } from "./Subscription.sol";
+
 /// @dev Constant Flow Agreement registration key, used to get the address from the host.
 bytes32 constant CFA_ID = keccak256("org.superfluid-finance.agreements.ConstantFlowAgreement.v1");
 
@@ -25,13 +27,18 @@ error InvalidToken();
 /// @dev Thrown when the agreement is other than the Constant Flow Agreement V1
 error InvalidAgreement();
 
-contract Subscription_SuperApp is SuperAppBase {
+contract Subscription_SuperApp is SuperAppBase, SubscriptionAccess {
   using CFAv1Library for CFAv1Library.InitData;
   CFAv1Library.InitData public cfaV1Lib;
 
   ISuperToken internal immutable _acceptedToken;
 
-  constructor(ISuperfluid host, ISuperToken acceptedToken) {
+  constructor(
+    ISuperfluid host,
+    ISuperToken acceptedToken,
+    string memory _name,
+    string memory _symbol
+  ) SubscriptionAccess(_name, _symbol) {
     assert(address(host) != address(0));
     assert(address(acceptedToken) != address(0));
 
@@ -71,11 +78,15 @@ contract Subscription_SuperApp is SuperAppBase {
     ISuperToken _superToken,
     address _agreementClass,
     bytes32, //_agreementId
-    bytes calldata, //_agreementData
-    bytes calldata, //_cbdata
+    bytes calldata _agreementData,
+    bytes calldata, // _cbdata,
     bytes calldata _ctx
   ) external override onlyExpected(_superToken, _agreementClass) onlyHost returns (bytes memory newCtx) {
     console.log("afterAgreementCreated called");
+
+    (address sender, ) = abi.decode(_agreementData, (address, address));
+    _issuePass(sender);
+
     newCtx = _ctx;
   }
 
@@ -101,5 +112,13 @@ contract Subscription_SuperApp is SuperAppBase {
   ) external override onlyHost returns (bytes memory newCtx) {
     console.log("afterAgreementTerminated called");
     newCtx = _ctx;
+  }
+
+  function _beforeTokenTransfer(
+    address, // from
+    address to,
+    uint256 // tokenId
+  ) internal override {
+    console.log("_beforeTokenTransfer called");
   }
 }
