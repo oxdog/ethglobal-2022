@@ -1,18 +1,18 @@
 // hardhat.ts
 
 // eslint-disable-next-line
-import '@nomiclabs/hardhat-ethers';
-import { ExternalProvider } from '@ethersproject/providers/src.ts/web3-provider';
+import '@nomiclabs/hardhat-ethers'
+import { ExternalProvider } from '@ethersproject/providers/src.ts/web3-provider'
 
-export {};
+export {}
 
 declare global {
   interface hre {
-    ethers: ExternalProvider;
+    ethers: ExternalProvider
   }
   interface Window {
-    ethereum: ExternalProvider;
+    ethereum: ExternalProvider
   }
 }
 
-export {};
+export {}

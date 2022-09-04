@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
-import '@nomiclabs/hardhat-ethers';
-import fs from 'fs';
+import '@nomiclabs/hardhat-ethers'
+import fs from 'fs'
 
-import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
-import { ContractTransaction } from 'ethers';
-import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import { ContractTransaction } from 'ethers'
+import { HardhatRuntimeEnvironment } from 'hardhat/types'
 
-export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
 export enum ProtocolState {
   Unpaused,
@@ -15,13 +15,13 @@ export enum ProtocolState {
 }
 
 export function getAddrs(): any {
-  const json = fs.readFileSync('addresses.json', 'utf8');
-  const addrs = JSON.parse(json);
-  return addrs;
+  const json = fs.readFileSync('addresses.json', 'utf8')
+  const addrs = JSON.parse(json)
+  return addrs
 }
 
 export async function waitForTx(tx: Promise<ContractTransaction>): Promise<void> {
-  await (await tx).wait();
+  await (await tx).wait()
 }
 
 // export async function deployContract(tx: Promise<ContractTransaction>): Promise<Contract> {
@@ -66,19 +66,19 @@ export async function waitForTx(tx: Promise<ContractTransaction>): Promise<void>
 // }
 
 export async function initEnv(hre: HardhatRuntimeEnvironment): Promise<SignerWithAddress[]> {
-  const ethers = hre.ethers; // This allows us to access the hre (Hardhat runtime environment)'s injected ethers instance easily
+  const ethers = hre.ethers // This allows us to access the hre (Hardhat runtime environment)'s injected ethers instance easily
 
   // const myAccount = await getAccountData(getMnemonic());
   // const signer = await SignerWithAddress.create(myAccount.signer);
 
-  const accounts = await ethers.getSigners(); // This returns an array of the default signers connected to the hre's ethers instance
-  const governance = accounts[1];
-  const treasury = accounts[2];
-  const user = accounts[3];
+  const accounts = await ethers.getSigners() // This returns an array of the default signers connected to the hre's ethers instance
+  const governance = accounts[1]
+  const treasury = accounts[2]
+  const user = accounts[3]
 
-  return [governance, treasury, user, accounts[4], accounts[5], accounts[6], accounts[7]];
+  return [governance, treasury, user, accounts[4], accounts[5], accounts[6], accounts[7]]
 }
 
 export async function sleep(ms: number): Promise<void> {
-  return await new Promise((resolve) => setTimeout(resolve, ms));
+  return await new Promise((resolve) => setTimeout(resolve, ms))
 }

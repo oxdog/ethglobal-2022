@@ -1,8 +1,8 @@
-import { YourNFT__factory, YourNFT } from 'generated/contract-types';
-import { task } from 'hardhat/config';
-import { create } from 'ipfs-http-client';
-import { getHardhatSigners } from 'tasks/functions/accounts';
-import { sleep } from 'tasks/functions/utils';
+import { YourNFT__factory, YourNFT } from 'generated/contract-types'
+import { task } from 'hardhat/config'
+import { create } from 'ipfs-http-client'
+import { getHardhatSigners } from 'tasks/functions/accounts'
+import { sleep } from 'tasks/functions/utils'
 
 task('mint', 'Mints NFTs to the specified address')
   .addPositionalParam('toAddress', 'The address that will mint them')
@@ -12,35 +12,35 @@ task('mint', 'Mints NFTs to the specified address')
       host: 'ipfs.infura.io',
       port: 5001,
       protocol: 'https',
-    });
+    })
 
     // // // // // // // // // // // // // // // // // //
 
-    console.log('\n\n 🎫 Minting to ' + toAddress + '...\n');
+    console.log('\n\n 🎫 Minting to ' + toAddress + '...\n')
 
-    const { deployer } = await getHardhatSigners(hre);
-    let yourNFTContract: YourNFT | undefined = undefined;
+    const { deployer } = await getHardhatSigners(hre)
+    let yourNFTContract: YourNFT | undefined = undefined
 
     if (contractAddress != null) {
       try {
-        yourNFTContract = YourNFT__factory.connect(contractAddress, deployer);
+        yourNFTContract = YourNFT__factory.connect(contractAddress, deployer)
       } catch (e) {
-        console.log('Invalid contractAddress, creating new YourNFT contract');
-        return;
+        console.log('Invalid contractAddress, creating new YourNFT contract')
+        return
       }
     }
 
     if (yourNFTContract == null) {
-      const factory = new YourNFT__factory(deployer);
-      yourNFTContract = await factory.deploy();
-      console.log('\n\n 🎫 YourNFT contract deployed at ' + yourNFTContract.address + '\n');
+      const factory = new YourNFT__factory(deployer)
+      yourNFTContract = await factory.deploy()
+      console.log('\n\n 🎫 YourNFT contract deployed at ' + yourNFTContract.address + '\n')
     }
 
     if (yourNFTContract == null) {
-      console.error('Could not get contract or create contract');
-      return;
+      console.error('Could not get contract or create contract')
+      return
     }
-    const delay = 1000;
+    const delay = 1000
 
     const buffalo = {
       description: "It's actually a bison?",
@@ -61,16 +61,16 @@ task('mint', 'Mints NFTs to the specified address')
           value: 42,
         },
       ],
-    };
-    console.log('Uploading buffalo...');
-    const uploaded = await ipfs.add(JSON.stringify(buffalo));
+    }
+    console.log('Uploading buffalo...')
+    const uploaded = await ipfs.add(JSON.stringify(buffalo))
 
-    console.log('Minting buffalo with IPFS hash (' + uploaded.path + ')');
+    console.log('Minting buffalo with IPFS hash (' + uploaded.path + ')')
     await yourNFTContract.mintItem(toAddress, uploaded.path, {
       gasLimit: 400000,
-    });
+    })
 
-    await sleep(delay);
+    await sleep(delay)
 
     const zebra = {
       description: 'What is it so worried about?',
@@ -91,16 +91,16 @@ task('mint', 'Mints NFTs to the specified address')
           value: 38,
         },
       ],
-    };
-    console.log('Uploading zebra...');
-    const uploadedzebra = await ipfs.add(JSON.stringify(zebra));
+    }
+    console.log('Uploading zebra...')
+    const uploadedzebra = await ipfs.add(JSON.stringify(zebra))
 
-    console.log('Minting zebra with IPFS hash (' + uploadedzebra.path + ')');
+    console.log('Minting zebra with IPFS hash (' + uploadedzebra.path + ')')
     await yourNFTContract.mintItem(toAddress, uploadedzebra.path, {
       gasLimit: 400000,
-    });
+    })
 
-    await sleep(delay);
+    await sleep(delay)
 
     const rhino = {
       description: 'What a horn!',
@@ -121,16 +121,16 @@ task('mint', 'Mints NFTs to the specified address')
           value: 22,
         },
       ],
-    };
-    console.log('Uploading rhino...');
-    const uploadedrhino = await ipfs.add(JSON.stringify(rhino));
+    }
+    console.log('Uploading rhino...')
+    const uploadedrhino = await ipfs.add(JSON.stringify(rhino))
 
-    console.log('Minting rhino with IPFS hash (' + uploadedrhino.path + ')');
+    console.log('Minting rhino with IPFS hash (' + uploadedrhino.path + ')')
     await yourNFTContract.mintItem(toAddress, uploadedrhino.path, {
       gasLimit: 400000,
-    });
+    })
 
-    await sleep(delay);
+    await sleep(delay)
 
     const fish = {
       description: 'Is that an underbyte?',
@@ -151,22 +151,22 @@ task('mint', 'Mints NFTs to the specified address')
           value: 15,
         },
       ],
-    };
-    console.log('Uploading fish...');
-    const uploadedfish = await ipfs.add(JSON.stringify(fish));
+    }
+    console.log('Uploading fish...')
+    const uploadedfish = await ipfs.add(JSON.stringify(fish))
 
-    console.log('Minting fish with IPFS hash (' + uploadedfish.path + ')');
+    console.log('Minting fish with IPFS hash (' + uploadedfish.path + ')')
     await yourNFTContract.mintItem(toAddress, uploadedfish.path, {
       gasLimit: 400000,
-    });
+    })
 
-    await sleep(delay);
+    await sleep(delay)
 
-    console.log('Transferring Ownership of YourCollectible to ' + toAddress + '...');
+    console.log('Transferring Ownership of YourCollectible to ' + toAddress + '...')
 
-    await yourNFTContract.transferOwnership(toAddress, { gasLimit: 400000 });
+    await yourNFTContract.transferOwnership(toAddress, { gasLimit: 400000 })
 
-    await sleep(delay);
+    await sleep(delay)
 
     /*
 
@@ -205,4 +205,4 @@ task('mint', 'Mints NFTs to the specified address')
    LibraryName: **LibraryAddress**
   });
   */
-  });
+  })
