@@ -1,5 +1,5 @@
 module.exports = {
-  content: ['./index.html', './pages/**/*.{vue,js,ts,jsx,tsx}', './components/**/*.{vue,js,ts,jsx,tsx}'],
+  content: ['./index.html', './src/pages/**/*.{vue,js,ts,jsx,tsx}', './src/components/**/*.{vue,js,ts,jsx,tsx}'],
   darkMode: 'class', // or 'media' or 'class'
   important: false,
   corePlugins: {

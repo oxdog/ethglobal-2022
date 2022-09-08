@@ -6,7 +6,7 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: { esmExternals: true, externalDir: true, swcFileReading: true },
   swcMinify: true,
-  reactRefresh: true,
+  // reactRefresh: true,
   productionBrowserSourceMaps: true,
   compiler: {
     emotion: true,

@@ -58,7 +58,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
               <a href="https://trello.com/b/ppbUs796/buidlguidlcom-idea-board" target="_blank" rel="noreferrer">
                 <span style={{ marginRight: 4 }}>💡 </span> trello
               </a>
-              ]{' '}
+              ]
             </span>
           }
           style={{ cursor: 'pointer' }}
