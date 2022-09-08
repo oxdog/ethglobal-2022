@@ -15,6 +15,7 @@ import { SuperAppBase } from "@superfluid-finance/ethereum-contracts/contracts/a
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @dev Constant Flow Agreement registration key, used to get the address from the host.
 bytes32 constant CFA_ID = keccak256("org.superfluid-finance.agreements.ConstantFlowAgreement.v1");
@@ -28,12 +29,12 @@ error InvalidToken();
 /// @dev Thrown when the agreement is other than the Constant Flow Agreement V1
 error InvalidAgreement();
 
-contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
+contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownable {
   using CFAv1Library for CFAv1Library.InitData;
   using Counters for Counters.Counter;
 
   CFAv1Library.InitData public cfaV1Lib;
-  ISuperToken internal immutable _acceptedToken;
+  ISuperToken internal immutable acceptedToken;
   Counters.Counter private passTracker;
   ISuperfluid private host;
 
@@ -48,17 +49,21 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
   // tokenId => Total Transmitted Value
   /// @dev Registry on value transmitted per pass
   mapping(uint256 => uint256) public TTV;
+  // mapping(uint256 => uint256) public permaTier;
+
+  uint256[] public tiers;
 
   constructor(
     ISuperfluid _host,
-    ISuperToken acceptedToken,
+    ISuperToken _acceptedToken,
     string memory _name,
-    string memory _symbol
+    string memory _symbol,
+    uint256[] memory _tiers
   ) ERC721(_name, _symbol) {
     assert(address(_host) != address(0));
-    assert(address(acceptedToken) != address(0));
+    assert(address(_acceptedToken) != address(0));
 
-    _acceptedToken = acceptedToken;
+    acceptedToken = _acceptedToken;
     host = _host;
 
     cfaV1Lib = CFAv1Library.InitData({ host: host, cfa: IConstantFlowAgreementV1(address(host.getAgreementClass(CFA_ID))) });
@@ -69,6 +74,8 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
     host.registerApp(SuperAppDefinitions.APP_LEVEL_FINAL | SuperAppDefinitions.BEFORE_AGREEMENT_CREATED_NOOP);
 
     passTracker.increment(); //start passId at 1
+
+    tiers = _tiers;
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -80,7 +87,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
   }
 
   modifier onlyExpected(ISuperToken superToken, address agreementClass) {
-    if (superToken != _acceptedToken) revert InvalidToken();
+    if (superToken != acceptedToken) revert InvalidToken();
     if (agreementClass != address(cfaV1Lib.cfa)) revert InvalidAgreement();
     _;
   }
@@ -97,7 +104,13 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
     bytes calldata _ctx
   ) external override onlyExpected(_superToken, _agreementClass) onlyHost returns (bytes memory newCtx) {
     (address sender, ) = abi.decode(_agreementData, (address, address));
-    _issuePass(sender);
+    if (balanceOf(sender) > 0) {
+      uint256 passId = tokenOfOwnerByIndex(sender, 0);
+      activePass[sender] = passId;
+      passState[passId] = true;
+    } else {
+      _issuePass(sender);
+    }
     newCtx = _ctx;
   }
 
@@ -120,12 +133,10 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
     bytes calldata _cbdata,
     bytes calldata _ctx
   ) external override onlyExpected(_superToken, _agreementClass) onlyHost returns (bytes memory newCtx) {
-    (uint256 timestamp, int96 flowRate) = abi.decode(_cbdata, (uint256, int96));
+    (uint256 oldTimestamp, int96 oldFlowRate) = abi.decode(_cbdata, (uint256, int96));
     (address sender, ) = abi.decode(_agreementData, (address, address));
-    uint256 passId = activePass[sender];
-    if (passId > 0) {
-      _logTTV(activePass[sender], timestamp, flowRate);
-    }
+
+    _logPass(activePass[sender], oldTimestamp, oldFlowRate);
 
     newCtx = _ctx;
   }
@@ -142,8 +153,8 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
   }
 
   function afterAgreementTerminated(
-    ISuperToken _superToken,
-    address _agreementClass,
+    ISuperToken, //_superToken,
+    address, //_agreementClass,
     bytes32, // _agreementId,
     bytes calldata _agreementData,
     bytes calldata _cbdata,
@@ -154,7 +165,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
 
     uint256 passId = activePass[sender];
     if (passId > 0) {
-      _logTTV(passId, timestamp, flowRate);
+      _logPass(passId, timestamp, flowRate);
       _deactivatePass(passId);
       _clearActivePass(sender);
     }
@@ -162,7 +173,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
   }
 
   // ---------------------------------------------------------------------------------------------
-  // Pass Logic
+  // Interal
   function _issuePass(address to) internal {
     require(activePass[to] == 0, "SFA: Subscriber has active pass");
     uint256 passId = passTracker.current();
@@ -181,10 +192,11 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
 
     if (from != address(0) && from != to) {
       if (activePass[from] == tokenId) {
-        _logActivePassTTV(from);
+        (uint256 timestamp, int96 flowRate, , ) = cfaV1Lib.cfa.getFlow(acceptedToken, from, address(this));
+        _logPass(tokenId, timestamp, flowRate);
         _deactivatePass(tokenId);
         _clearActivePass(from);
-        cfaV1Lib.deleteFlow(from, address(this), _acceptedToken);
+        cfaV1Lib.deleteFlow(from, address(this), acceptedToken);
       }
     }
   }
@@ -193,37 +205,64 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable {
     passState[passId] = false;
   }
 
-  function _logActivePassTTV(address _subscriber) internal {
-    require(activePass[_subscriber] > 0, "No active pass to log");
-    (uint256 timestamp, int96 flowRate, , ) = cfaV1Lib.cfa.getFlow(_acceptedToken, _subscriber, address(this));
-    _logTTV(activePass[_subscriber], timestamp, flowRate);
-  }
-
-  // TTV ... Total Transmitted Value
-  function _logTTV(
-    uint256 _passId,
-    uint256 timestamp,
-    int96 flowRate
-  ) internal {
-    uint256 timeElapsed = block.timestamp - timestamp;
-    uint256 _TTV = timeElapsed * uint256(uint96(flowRate));
-    TTV[_passId] += _TTV;
-  }
-
   function _clearActivePass(address _subscriber) internal {
     activePass[_subscriber] = 0;
   }
 
-  function switchPass(uint256 passId) external {
-    require(ownerOf(passId) == msg.sender, "Not Owner of Pass");
-    (uint256 timestamp, , , ) = cfaV1Lib.cfa.getFlow(_acceptedToken, msg.sender, address(this));
-    require(timestamp > 0, "No stream active");
-    _logActivePassTTV(msg.sender);
-    _deactivatePass(activePass[msg.sender]);
-    activePass[msg.sender] = passId;
+  function _logPass(
+    uint256 _passId,
+    uint256 _timestamp,
+    int96 _flowRate
+  ) internal {
+    (uint256 _tier, uint256 _TTV) = _calculatePass(_passId, _timestamp, _flowRate);
+    TTV[_passId] = _TTV;
+    // permaTier[_passId] = _tier;
+  }
+
+  function _calculatePass(
+    uint256 _passId,
+    uint256 _timestamp,
+    int96 _flowRate
+  ) internal view returns (uint256 _tier, uint256 _TTV) {
+    uint256 timeElapsed = block.timestamp - _timestamp;
+    uint256 _added_TTV = timeElapsed * uint256(uint96(_flowRate));
+    _TTV = _added_TTV + TTV[_passId];
+
+    _tier = 0;
+    for (uint256 i = 0; i < tiers.length; i++) {
+      if (tiers[i] <= _TTV) {
+        _tier = i;
+      }
+    }
+    // _tier = _tier > permaTier[_passId] ? _tier : permaTier[_passId];
   }
 
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
-    super.supportsInterface(interfaceId);
+    return super.supportsInterface(interfaceId);
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  // External
+  function switchPass(uint256 _newPassId) external {
+    require(ownerOf(_newPassId) == msg.sender, "Not Owner of Pass");
+    (uint256 timestamp, int96 flowRate, , ) = cfaV1Lib.cfa.getFlow(acceptedToken, msg.sender, address(this));
+    require(timestamp > 0, "No stream active");
+
+    uint256 oldPass = activePass[msg.sender];
+
+    _logPass(oldPass, timestamp, flowRate);
+    _deactivatePass(oldPass);
+    activePass[msg.sender] = _newPassId;
+  }
+
+  function activeTier(address _user) public view returns (uint256) {
+    require(activePass[_user] > 0, "User has no active Pass");
+    (uint256 timestamp, int96 flowRate, , ) = cfaV1Lib.cfa.getFlow(acceptedToken, _user, address(this));
+    (uint256 tier, ) = _calculatePass(activePass[_user], timestamp, flowRate);
+    return tier;
+  }
+
+  function updateTier(uint256[] calldata _newTiers) external onlyOwner {
+    tiers = _newTiers;
   }
 }

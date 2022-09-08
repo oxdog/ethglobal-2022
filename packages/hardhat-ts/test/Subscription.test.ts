@@ -76,7 +76,12 @@ describe('Subscription', function () {
   beforeEach(async function () {
     //* Deploy Subscription_SuperApp
     const subFactory = new Subscription_SuperApp__factory(deployer)
-    sub = await subFactory.deploy(sf.host.contract.address, daix.address, 'TestSub', 'TESU')
+    sub = await subFactory.deploy(sf.host.contract.address, daix.address, 'TestSub', 'TESU', [
+      0,
+      utils.parseEther('1'),
+      utils.parseEther('2'),
+      utils.parseEther('3'),
+    ])
     // await dai.connect(deployer).mint(deployer.address, INITIAL_BALANCE)
     // await dai.connect(deployer).approve(daix.address, INITIAL_BALANCE)
     // await daix.connect(deployer).upgrade(INITIAL_BALANCE)
@@ -164,11 +169,6 @@ describe('Subscription', function () {
       })
     })
 
-    describe('Pass Tiers', function () {
-      it.skip('Owner can update Pass Tiers', async () => {})
-      it.skip('Perma lock Tier in Pass', async () => {})
-    })
-
     describe('Stream Creation', function () {
       it('Issue Pass', async () => {
         expect(await sub.balanceOf(user1.address)).to.be.equal(0)
@@ -199,12 +199,40 @@ describe('Subscription', function () {
         await expect(createFlowOperation2.exec(user1)).to.be.revertedWith('CFA: flow already exist')
       })
 
-      it.skip('Activate Pass if Subscriber already owns one', async () => {})
+      it("Subscriber can't update not existing stream", async () => {
+        const updateFlowOperation = sf.cfaV1.updateFlow({
+          receiver: sub.address,
+          superToken: daix.address,
+          flowRate: '100000000',
+          overrides: { gasLimit: 1_000_000 },
+        })
+
+        const ownerContractFlowRate = await sf.cfaV1.getFlow({
+          superToken: daix.address,
+          sender: user1.address,
+          receiver: sub.address,
+          providerOrSigner: user1,
+        })
+
+        expect(ownerContractFlowRate, '0')
+        await expect(updateFlowOperation.exec(user1)).to.be.revertedWith('CFA: flow does not exist')
+      })
+
+      it('Activate Pass if Subscriber already owns one', async () => {
+        const createFlowOperation = createFlow()
+        await createFlowOperation.exec(user1)
+        await sub.connect(user1).transferFrom(user1.address, user2.address, 1, { gasLimit: 1_000_000 })
+        expect(await sub.ownerOf(1)).to.be.equal(user2.address)
+        expect(await sub.activePass(user2.address)).to.be.equal(0)
+        expect(await sub.passState(1)).to.be.equal(false)
+
+        await createFlowOperation.exec(user2)
+        expect(await sub.activePass(user2.address)).to.be.equal(1)
+        expect(await sub.passState(1)).to.be.equal(true)
+      })
     })
 
     describe('Stream Update', function () {
-      beforeEach(async () => {})
-
       it('Log Total Stream Transmission in Pass', async () => {
         const createFlowOperation1 = createFlow()
         const updateFlowOperation = sf.cfaV1.updateFlow({
@@ -350,6 +378,108 @@ describe('Subscription', function () {
           providerOrSigner: user1,
         })
         expect(ownerContractFlowRate, '110000000')
+      })
+    })
+
+    describe('Pass Tiers', function () {
+      let timeForTier: number
+
+      beforeEach(async () => {
+        timeForTier = utils.parseEther('1').div('110000000').add(1).toNumber()
+
+        const createFlowOperation = createFlow()
+        await createFlowOperation.exec(user1)
+
+        expect(await sub.ownerOf(1)).to.be.equal(user1.address)
+      })
+
+      // removed permatier complexity
+      // it.skip('Logs PermaTier on Transfer', async () => {
+      //   expect(await sub.permaTier(1)).to.be.equal(0)
+      //   await ethers.provider.send('evm_increaseTime', [timeForTier])
+
+      //   await sub.connect(user1).transferFrom(user1.address, user2.address, 1, { gasLimit: 1_000_000 })
+      //   expect(await sub.permaTier(1)).to.be.equal(1)
+      // })
+
+      // Skipped due to Time dependent hardhat bug
+      // it.skip('Logs PermaTier on Stream Update', async () => {
+      //   expect(await sub.permaTier(1)).to.be.equal(0)
+      //   await ethers.provider.send('evm_increaseTime', [timeForTier])
+
+      //   const updateFlowOperation = sf.cfaV1.updateFlow({
+      //     receiver: sub.address,
+      //     superToken: daix.address,
+      //     flowRate: '120000000',
+      //     overrides: { gasLimit: 1_000_000 },
+      //   })
+
+      //   await updateFlowOperation.exec(user1)
+      //   expect(await sub.permaTier(1)).to.be.equal(1)
+      // })
+
+      // it.skip('Logs PermaTier on Stream Cancel', async () => {
+      //   expect(await sub.permaTier(1)).to.be.equal(0)
+
+      //   await ethers.provider.send('evm_increaseTime', [timeForTier])
+
+      //   const deleteFlowOperation = sf.cfaV1.deleteFlow({
+      //     sender: user1.address,
+      //     receiver: sub.address,
+      //     superToken: daix.address,
+      //     flowRate: '100000000',
+      //     overrides: { gasLimit: 1_000_000 },
+      //   })
+
+      //   expect(await sub.permaTier(1)).to.be.equal(0)
+      //   await deleteFlowOperation.exec(user1)
+      //   expect(await sub.permaTier(1)).to.be.equal(1)
+      // })
+
+      it('Loads correct tier', async () => {
+        // Reach Tier 0
+        expect(await sub.activeTier(user1.address)).to.be.equal(0)
+
+        // Reach Tier 1
+        await ethers.provider.send('evm_increaseTime', [timeForTier])
+        await ethers.provider.send('evm_mine', [])
+        expect(await sub.activeTier(user1.address)).to.be.equal(1)
+
+        // Reach Tier 2
+        await ethers.provider.send('evm_increaseTime', [timeForTier])
+        await ethers.provider.send('evm_mine', [])
+        expect(await sub.activeTier(user1.address)).to.be.equal(2)
+
+        // Reach Tier 3
+        await ethers.provider.send('evm_increaseTime', [timeForTier])
+        await ethers.provider.send('evm_mine', [])
+        expect(await sub.activeTier(user1.address)).to.be.equal(3)
+
+        // Reach Tier 4
+        await ethers.provider.send('evm_increaseTime', [timeForTier])
+        await ethers.provider.send('evm_mine', [])
+        expect(await sub.activeTier(user1.address)).to.be.equal(3)
+      })
+
+      it('Owner can update Pass Tiers', async () => {
+        expect(await sub.tiers(1)).to.be.equal(utils.parseEther('1'))
+        await sub.updateTier([0, utils.parseEther('2')])
+        expect(await sub.tiers(1)).to.be.equal(utils.parseEther('2'))
+      })
+
+      it('Only owner can update Pass Tiers', async () => {
+        await expect(sub.connect(user1).updateTier([0, utils.parseEther('1')])).to.be.revertedWith('')
+      })
+
+      it('Changes user tier on update Pass Tiers', async () => {
+        expect(await sub.tiers(1)).to.be.equal(utils.parseEther('1'))
+
+        await ethers.provider.send('evm_increaseTime', [timeForTier])
+        await ethers.provider.send('evm_mine', [])
+        expect(await sub.activeTier(user1.address)).to.be.equal(1)
+
+        await sub.updateTier([0, utils.parseEther('2')])
+        expect(await sub.activeTier(user1.address)).to.be.equal(0)
       })
     })
   })
