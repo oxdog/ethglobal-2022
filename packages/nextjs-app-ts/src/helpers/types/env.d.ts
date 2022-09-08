@@ -6,7 +6,7 @@ declare global {
       readonly NEXT_PUBLIC_APP_TARGET_NETWORK: string;
       readonly NEXT_PUBLIC_RPC_MAINNET: string;
       readonly NEXT_PUBLIC_RPC_MAINNET_INFURA: string;
-      readonly NEXT_PUBLIC_KEY_INFURA: string;
+      readonly NEXT_PUBLIC_KEY_ALCHEMY: string;
       readonly NEXT_PUBLIC_KEY_ETHERSCAN: string;
       readonly NEXT_PUBLIC_KEY_BLOCKNATIVE_DAPPID: string;
       readonly NEXT_PUBLIC_FAUCET_ALLOWED: string;

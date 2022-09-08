@@ -26,15 +26,9 @@ export const getAppContractsConfig = () => {
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your hadrdhat contracts here
       // --------------------------------------------------
-      YourContract: createConnectorForHardhatContract(
-        'YourContract',
-        hardhatContracts.YourContract__factory,
-        hardhatDeployedContractsJson
-      ),
-
-      YourNFT: createConnectorForHardhatContract(
-        'YourNFT',
-        hardhatContracts.YourNFT__factory,
+      SSA: createConnectorForHardhatContract(
+        'Subscription_SuperApp',
+        hardhatContracts.Subscription_SuperApp__factory,
         hardhatDeployedContractsJson
       ),
 
@@ -46,16 +40,16 @@ export const getAppContractsConfig = () => {
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your external abi here (unverified contracts)`
       // --------------------------------------------------
-      // YourContract: createConnectorForExternalAbi(
-      //   'YourContract',
+      // Subscription_SuperApp: createConnectorForExternalAbi(
+      //   'Subscription_SuperApp',
       //   {
       //     [TARGET_NETWORK_INFO.chainId]: {
       //       address: 'xxx',
       //       chainId: TARGET_NETWORK_INFO.chainId,
       //     },
       //   },
-      //   hardhatContracts.YourContract__factory.abi,
-      //   hardhatContracts.YourContract__factory.connect
+      //   hardhatContracts.Subscription_SuperApp__factory.abi,
+      //   hardhatContracts.Subscription_SuperApp__factory.connect
       // ),
     } as const;
 

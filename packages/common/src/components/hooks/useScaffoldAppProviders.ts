@@ -14,7 +14,7 @@ export const useScaffoldAppProviders = (config: {
   mainnetProvider: StaticJsonRpcProvider | undefined;
   localProvider: StaticJsonRpcProvider | undefined;
   targetNetwork: TNetworkInfo;
-  infuraId: string;
+  alchemyKey: string;
   connectToBurnerAutomatically: boolean;
 }): IScaffoldAppProviders => {
   const ethersAppContext = useEthersAppContext();
@@ -22,7 +22,7 @@ export const useScaffoldAppProviders = (config: {
   const [localAdaptor] = useEthersAdaptorFromProviderOrSigners(config.localProvider);
 
   const hasLocalProvider = config?.localProvider !== undefined;
-  const web3Config = useGetWeb3ModalConfig(hasLocalProvider, { infuraId: config.infuraId });
+  const web3Config = useGetWeb3ModalConfig(hasLocalProvider, { infuraId: config.alchemyKey });
 
   const { currentTheme } = useThemeSwitcher();
 

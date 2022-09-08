@@ -22,7 +22,7 @@ import { getMnemonic } from './tasks/functions/mnemonic'
  */
 
 // this loads the .env file into process.env
-envConfig({ path: '../next-app-ts/.env' })
+envConfig({ path: '../nextjs-app-ts/.env' })
 
 /**
  * this loads all the tasks from the tasks folder

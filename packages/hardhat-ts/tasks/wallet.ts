@@ -94,6 +94,7 @@ task('send', 'Send ETH')
 
       if (taskArgs.data != null) {
         txRequest.data = taskArgs.data
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         debugLog(`Adding data to payload: ${txRequest.data}`)
       }
       debugLog(`${(txRequest.gasPrice as any) / 1000000000} gwei`)

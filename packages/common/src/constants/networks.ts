@@ -1,4 +1,5 @@
-const INFURA_ID = process.env.VITE_RPC_MAINNET_INFURA;
+// const ALCHEMY_KEY = process.env.NEXT_PUBLIC_KEY_ALCHEMY;
+const ALCHEMY_KEY = 'uy0331LLTlWAR9rOmF2jRkCdNj4JpQu6';
 
 let hostname = 'localhost';
 if (typeof window !== 'undefined' && window != null) {
@@ -17,14 +18,14 @@ export const NETWORKS = {
     name: 'mainnet',
     color: '#ff8b9e',
     chainId: 1,
-    url: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    url: `https://mainnet.infura.io/v3/${ALCHEMY_KEY}`,
     blockExplorer: 'https://etherscan.io/',
   },
   kovan: {
     name: 'kovan',
     color: '#7003DD',
     chainId: 42,
-    url: `https://kovan.infura.io/v3/${INFURA_ID}`,
+    url: `https://kovan.infura.io/v3/${ALCHEMY_KEY}`,
     blockExplorer: 'https://kovan.etherscan.io/',
     faucet: 'https://gitter.im/kovan-testnet/faucet', // https://faucet.kovan.network/
   },
@@ -32,7 +33,7 @@ export const NETWORKS = {
     name: 'rinkeby',
     color: '#e0d068',
     chainId: 4,
-    url: `https://rinkeby.infura.io/v3/${INFURA_ID}`,
+    url: `https://rinkeby.infura.io/v3/${ALCHEMY_KEY}`,
     faucet: 'https://faucet.rinkeby.io/',
     blockExplorer: 'https://rinkeby.etherscan.io/',
   },
@@ -42,7 +43,7 @@ export const NETWORKS = {
     chainId: 3,
     faucet: 'https://faucet.ropsten.be/',
     blockExplorer: 'https://ropsten.etherscan.io/',
-    url: `https://ropsten.infura.io/v3/${INFURA_ID}`,
+    url: `https://ropsten.infura.io/v3/${ALCHEMY_KEY}`,
   },
   goerli: {
     name: 'goerli',
@@ -50,7 +51,7 @@ export const NETWORKS = {
     chainId: 5,
     faucet: 'https://goerli-faucet.slock.it/',
     blockExplorer: 'https://goerli.etherscan.io/',
-    url: `https://goerli.infura.io/v3/${INFURA_ID}`,
+    url: `https://eth-goerli.g.alchemy.com/v2/${ALCHEMY_KEY}`,
   },
   xdai: {
     name: 'xdai',

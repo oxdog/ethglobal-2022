@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import { GenericContract } from 'eth-components/ant/generic-contract';
-import { useContractReader, useBalance, useEthersAdaptorFromProviderOrSigners, useEventListener } from 'eth-hooks';
+import { useBalance, useEthersAdaptorFromProviderOrSigners, useEventListener } from 'eth-hooks';
 import { useEthersAppContext } from 'eth-hooks/context';
 import { useDexEthPrice } from 'eth-hooks/dapps';
 import { asEthersAdaptor } from 'eth-hooks/functions';
@@ -19,7 +19,7 @@ import { useScaffoldHooksExamples } from '~~/components/hooks/useScaffoldHooksEx
 import {
   BURNER_FALLBACK_ENABLED,
   CONNECT_TO_BURNER_AUTOMATICALLY,
-  INFURA_ID,
+  ALCHEMY_KEY,
   LOCAL_PROVIDER,
   MAINNET_PROVIDER,
   TARGET_NETWORK_INFO,
@@ -56,7 +56,7 @@ export const MainPage: FC<IMainPageProps> = (props) => {
     connectToBurnerAutomatically: CONNECT_TO_BURNER_AUTOMATICALLY,
     localProvider: LOCAL_PROVIDER,
     mainnetProvider: MAINNET_PROVIDER,
-    infuraId: INFURA_ID,
+    alchemyKey: ALCHEMY_KEY,
   });
 
   // 🦊 Get your web3 ethers context from current providers
@@ -89,20 +89,19 @@ export const MainPage: FC<IMainPageProps> = (props) => {
   // -----------------------------
 
   // init contracts
-  const yourContract = useAppContracts('YourContract', ethersAppContext.chainId);
-  const yourNFT = useAppContracts('YourNFT', ethersAppContext.chainId);
+  const Subscription_SuperApp = useAppContracts('SSA', ethersAppContext.chainId);
   const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId);
 
   // keep track of a variable from the contract in the local React state:
-  const [purpose, update] = useContractReader(
-    yourContract,
-    yourContract?.purpose,
-    [],
-    yourContract?.filters.SetPurpose()
-  );
+  // const [purpose, update] = useContractReader(
+  //   Subscription_SuperApp,
+  //   Subscription_SuperApp?.name,
+  //   [],
+  //   Subscription_SuperApp?.filters.SetPurpose()
+  // );
 
   // 📟 Listen for broadcast events
-  const [setPurposeEvents] = useEventListener(yourContract, 'SetPurpose', 0);
+  const [setPurposeEvents] = useEventListener(Subscription_SuperApp, 'SetPurpose', 0);
 
   // -----------------------------
   // .... 🎇 End of examples
@@ -122,27 +121,17 @@ export const MainPage: FC<IMainPageProps> = (props) => {
   // This is the list of tabs and their contents
   const pageList: TContractPageList = {
     mainPage: {
-      name: 'YourContract',
+      name: 'Subscription_SuperApp',
       content: (
         <GenericContract
-          contractName="YourContract"
-          contract={yourContract}
+          contractName="Subscription_SuperApp"
+          contract={Subscription_SuperApp}
           mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
           blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
         />
       ),
     },
     pages: [
-      {
-        name: 'YourNFT',
-        content: (
-          <GenericContract
-            contractName="YourNFT"
-            contract={yourNFT}
-            mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
-            blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}></GenericContract>
-        ),
-      },
       {
         name: 'Mainnet-Dai',
         content: (

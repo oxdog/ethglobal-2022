@@ -16,7 +16,7 @@ declare global {
       readonly NEXT_PUBLIC_APP_TARGET_NETWORK: string;
       readonly NEXT_PUBLIC_RPC_MAINNET: string;
       readonly NEXT_PUBLIC_RPC_MAINNET_INFURA: string;
-      readonly NEXT_PUBLIC_KEY_INFURA: string;
+      readonly NEXT_PUBLIC_KEY_ALCHEMY: string;
       readonly NEXT_PUBLIC_KEY_ETHERSCAN: string;
       readonly NEXT_PUBLIC_KEY_BLOCKNATIVE_DAPPID: string;
       readonly NEXT_PUBLIC_FAUCET_ALLOWED: string;
@@ -109,7 +109,7 @@ if (DEBUG) invariant.log(`BLOCKNATIVE_DAPPID: ${BLOCKNATIVE_DAPPID}`);
  * PROVIDERS CONFIG
  ****************************** */
 
-export const INFURA_ID: string = process.env.NEXT_PUBLIC_KEY_INFURA;
+export const ALCHEMY_KEY: string = process.env.NEXT_PUBLIC_KEY_ALCHEMY;
 
 // -------------------
 // Connecting to mainnet
@@ -117,9 +117,9 @@ export const INFURA_ID: string = process.env.NEXT_PUBLIC_KEY_INFURA;
 // attempt to connect to our own scaffold eth rpc and if that fails fall back to infura...
 const mainnetScaffoldEthProvider = new StaticJsonRpcProvider(process.env.NEXT_PUBLIC_RPC_MAINNET);
 const mainnetInfura = new StaticJsonRpcProvider(
-  `${process.env.NEXT_PUBLIC_RPC_MAINNET_INFURA}/${process.env.NEXT_PUBLIC_KEY_INFURA}`
+  `${process.env.NEXT_PUBLIC_RPC_MAINNET_INFURA}/${process.env.NEXT_PUBLIC_KEY_ALCHEMY}`
 );
-// const mainnetProvider = new InfuraProvider("mainnet",process.env.NEXT_PUBLIC_KEY_INFURA);
+// const mainnetProvider = new InfuraProvider("mainnet",process.env.NEXT_PUBLIC_KEY_ALCHEMY);
 
 // 🚊 your mainnet provider
 export const MAINNET_PROVIDER = mainnetScaffoldEthProvider;
