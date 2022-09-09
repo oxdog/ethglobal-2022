@@ -1,21 +1,20 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
-import { GenericContract } from 'eth-components/ant/generic-contract';
-import { useBalance, useEthersAdaptorFromProviderOrSigners, useEventListener } from 'eth-hooks';
-import { useEthersAppContext } from 'eth-hooks/context';
-import { useDexEthPrice } from 'eth-hooks/dapps';
-import { asEthersAdaptor } from 'eth-hooks/functions';
-import Head from 'next/head';
-import React, { FC, ReactElement } from 'react';
+import { GenericContract } from 'eth-components/ant/generic-contract'
+import { useBalance, useEthersAdaptorFromProviderOrSigners, useEventListener } from 'eth-hooks'
+import { useEthersAppContext } from 'eth-hooks/context'
+import { useDexEthPrice } from 'eth-hooks/dapps'
+import { asEthersAdaptor } from 'eth-hooks/functions'
+import Head from 'next/head'
+import React, { FC, ReactElement } from 'react'
 
-import { MainPageFooter, MainPageHeader, createTabsAndPages, TContractPageList } from '.';
+import { MainPageFooter, MainPageHeader, createTabsAndPages, TContractPageList } from '.'
 
-import { useLoadAppContracts, useConnectAppContracts, useAppContracts } from '~common/components/context';
-import { useCreateAntNotificationHolder } from '~common/components/hooks/useAntNotification';
-import { useBurnerFallback } from '~common/components/hooks/useBurnerFallback';
-import { useScaffoldAppProviders } from '~common/components/hooks/useScaffoldAppProviders';
-import { NETWORKS } from '~common/constants';
-import { useScaffoldHooksExamples } from '~~/components/hooks/useScaffoldHooksExamples';
+import { useLoadAppContracts, useConnectAppContracts, useAppContracts } from '~common/components/context'
+import { useCreateAntNotificationHolder } from '~common/components/hooks/useAntNotification'
+import { useBurnerFallback } from '~common/components/hooks/useBurnerFallback'
+import { useScaffoldAppProviders } from '~common/components/hooks/useScaffoldAppProviders'
+import { NETWORKS } from '~common/constants'
 import {
   BURNER_FALLBACK_ENABLED,
   CONNECT_TO_BURNER_AUTOMATICALLY,
@@ -23,7 +22,8 @@ import {
   LOCAL_PROVIDER,
   MAINNET_PROVIDER,
   TARGET_NETWORK_INFO,
-} from '~~/config/app.config';
+} from '~~/config/app.config'
+import { useScaffoldHooksExamples } from '~~/hooks/useScaffoldHooksExamples'
 
 /** ********************************
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -35,8 +35,8 @@ import {
  * ******************************** */
 
 interface IMainPageProps {
-  pageName: string;
-  children?: ReactElement;
+  pageName: string
+  children?: ReactElement
 }
 
 /**
@@ -44,7 +44,7 @@ interface IMainPageProps {
  * @returns
  */
 export const MainPage: FC<IMainPageProps> = (props) => {
-  const notificationHolder = useCreateAntNotificationHolder();
+  const notificationHolder = useCreateAntNotificationHolder()
 
   // -----------------------------
   // Providers, signers & wallets
@@ -57,24 +57,24 @@ export const MainPage: FC<IMainPageProps> = (props) => {
     localProvider: LOCAL_PROVIDER,
     mainnetProvider: MAINNET_PROVIDER,
     alchemyKey: ALCHEMY_KEY,
-  });
+  })
 
   // 🦊 Get your web3 ethers context from current providers
-  const ethersAppContext = useEthersAppContext();
+  const ethersAppContext = useEthersAppContext()
 
   // if no user is found use a burner wallet on localhost as fallback if enabled
-  useBurnerFallback(scaffoldAppProviders, BURNER_FALLBACK_ENABLED);
+  useBurnerFallback(scaffoldAppProviders, BURNER_FALLBACK_ENABLED)
 
   // -----------------------------
   // Load Contracts
   // -----------------------------
   // 🛻 load contracts
-  useLoadAppContracts();
+  useLoadAppContracts()
   // 🏭 connect to contracts for mainnet network & signer
-  const [mainnetAdaptor] = useEthersAdaptorFromProviderOrSigners(MAINNET_PROVIDER);
-  useConnectAppContracts(mainnetAdaptor);
+  const [mainnetAdaptor] = useEthersAdaptorFromProviderOrSigners(MAINNET_PROVIDER)
+  useConnectAppContracts(mainnetAdaptor)
   // 🏭 connec to  contracts for current network & signer
-  useConnectAppContracts(asEthersAdaptor(ethersAppContext));
+  useConnectAppContracts(asEthersAdaptor(ethersAppContext))
 
   // -----------------------------
   // Hooks use and examples
@@ -82,15 +82,15 @@ export const MainPage: FC<IMainPageProps> = (props) => {
   // 🎉 Console logs & More hook examples:
   // 🚦 disable this hook to stop console logs
   // 🏹🏹🏹 go here to see how to use hooks!
-  useScaffoldHooksExamples(scaffoldAppProviders);
+  useScaffoldHooksExamples(scaffoldAppProviders)
 
   // -----------------------------
   // These are the contracts!
   // -----------------------------
 
   // init contracts
-  const Subscription_SuperApp = useAppContracts('SSA', ethersAppContext.chainId);
-  const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId);
+  const Subscription_SuperApp = useAppContracts('SSA', ethersAppContext.chainId)
+  const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId)
 
   // keep track of a variable from the contract in the local React state:
   // const [purpose, update] = useContractReader(
@@ -101,7 +101,7 @@ export const MainPage: FC<IMainPageProps> = (props) => {
   // );
 
   // 📟 Listen for broadcast events
-  const [setPurposeEvents] = useEventListener(Subscription_SuperApp, 'SetPurpose', 0);
+  const [setPurposeEvents] = useEventListener(Subscription_SuperApp, 'SetPurpose', 0)
 
   // -----------------------------
   // .... 🎇 End of examples
@@ -110,10 +110,10 @@ export const MainPage: FC<IMainPageProps> = (props) => {
   const [ethPrice] = useDexEthPrice(
     scaffoldAppProviders.mainnetAdaptor?.provider,
     ethersAppContext.chainId !== 1 ? scaffoldAppProviders.targetNetwork : undefined
-  );
+  )
 
   // 💰 this hook will get your balance
-  const [yourCurrentBalance] = useBalance(ethersAppContext.account);
+  const [yourCurrentBalance] = useBalance(ethersAppContext.account)
 
   // -----------------------------
   // 📃 App Page List
@@ -144,9 +144,9 @@ export const MainPage: FC<IMainPageProps> = (props) => {
         ),
       },
     ],
-  };
-  const { tabMenu, pages } = createTabsAndPages(pageList);
-  const RouteNotFound = <h3 className="p-10 mt-10 text-xl">Route Not Found </h3>;
+  }
+  const { tabMenu, pages } = createTabsAndPages(pageList)
+  const RouteNotFound = <h3 className="p-10 mt-10 text-xl">Route Not Found </h3>
 
   // -----------------------------
   // 📃 Render the react components
@@ -165,5 +165,5 @@ export const MainPage: FC<IMainPageProps> = (props) => {
       <MainPageFooter scaffoldAppProviders={scaffoldAppProviders} price={ethPrice} />
       <div style={{ position: 'absolute' }}>{notificationHolder}</div>
     </div>
-  );
-};
+  )
+}

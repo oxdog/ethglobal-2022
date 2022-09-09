@@ -2,26 +2,21 @@ import { getNetwork } from '@ethersproject/networks'
 import { Alert, PageHeader } from 'antd'
 import { Account } from 'eth-components/ant'
 import { EthComponentsSettingsContext } from 'eth-components/models'
-import { useGasPrice } from 'eth-hooks'
 import {
-  useEthersAppContext,
   connectorErrorText,
-  NoStaticJsonRPCProviderFoundError,
   CouldNotActivateError,
+  NoStaticJsonRPCProviderFoundError,
+  useEthersAppContext,
   UserClosedModalError,
 } from 'eth-hooks/context'
-import React, { FC, ReactElement, ReactNode, useCallback, useContext } from 'react'
+import { FC, ReactElement, ReactNode, useCallback, useContext } from 'react'
 
-import { FaucetHintButton } from '~common/components'
 import { useAntNotification } from '~common/components/hooks'
-import { getNetworkInfo } from '~common/functions'
 import { IScaffoldAppProviders } from '~common/models'
-import { FAUCET_ENABLED } from '~~/config/app.config'
 
 // displays a page header
 export interface IMainPageHeaderProps {
   scaffoldAppProviders: IScaffoldAppProviders
-  price: number
   children?: ReactNode
 }
 
@@ -30,39 +25,20 @@ export interface IMainPageHeaderProps {
  * @param props
  * @returns
  */
-export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
+export const Header: FC<IMainPageHeaderProps> = (props) => {
   const settingsContext = useContext(EthComponentsSettingsContext)
   const ethersAppContext = useEthersAppContext()
   const selectedChainId = ethersAppContext.chainId
 
   const notification = useAntNotification()
 
-  // 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation
-  const [gasPrice] = useGasPrice(ethersAppContext.chainId, 'fast', getNetworkInfo(ethersAppContext.chainId))
-
   /**
    * this shows the page header and other informaiton
    */
   const left = (
     <>
-      <div>
-        <PageHeader
-          title="🏭 Scaffold-Eth"
-          subTitle={
-            <span>
-              v2.1 - [
-              <a href="https://youtu.be/aYMj00JoIug" target="_blank" rel="noreferrer">
-                <span style={{ marginRight: 4 }}>🎥 </span> 8min speed run
-              </a>
-              ] - [
-              <a href="https://trello.com/b/ppbUs796/buidlguidlcom-idea-board" target="_blank" rel="noreferrer">
-                <span style={{ marginRight: 4 }}>💡 </span> trello
-              </a>
-              ]
-            </span>
-          }
-          style={{ cursor: 'pointer' }}
-        />
+      <div className="absolute top-6 left-4 text-3xl">
+        <PageHeader title="🥪 Supersub" subTitle={<></>} style={{ cursor: 'pointer' }} />
       </div>
       {props.children}
     </>
@@ -101,15 +77,9 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
         createLoginConnector={props.scaffoldAppProviders.createLoginConnector}
         loginOnError={onLoginError}
         ensProvider={props.scaffoldAppProviders.mainnetAdaptor?.provider}
-        price={props.price}
+        price={0}
         blockExplorer={props.scaffoldAppProviders.targetNetwork.blockExplorer}
         hasContextConnect={true}
-      />
-      <FaucetHintButton
-        ethComponentSettings={settingsContext}
-        scaffoldAppProviders={props.scaffoldAppProviders}
-        gasPrice={gasPrice}
-        faucetEnabled={FAUCET_ENABLED}
       />
       {props.children}
     </div>
@@ -147,10 +117,10 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
   }
 
   return (
-    <>
+    <div className="flex flex-row">
       {left}
       {networkDisplay}
       {right}
-    </>
+    </div>
   )
 }

@@ -2773,6 +2773,7 @@ __metadata:
     "@next/eslint-plugin-next": ^12.2.3
     "@ramp-network/ramp-instant-sdk": ^3.2.0
     "@scaffold-eth/common": 0.0.0
+    "@superfluid-finance/sdk-core": ^0.5.6
     "@tailwindcss/aspect-ratio": ^0.4.0
     "@tailwindcss/forms": ^0.5.2
     "@tailwindcss/line-clamp": ^0.4.0
@@ -2797,6 +2798,7 @@ __metadata:
     buffer: ^6.0.3
     cross-env: ^7.0.3
     daisyui: ^2.20.0
+    decimal.js: ^10.4.0
     eslint: ^8.20.0
     eslint-config-airbnb: ^19.0.4
     eslint-config-airbnb-typescript: ^17.0.0
@@ -2814,6 +2816,7 @@ __metadata:
     ethereum-cryptography: ^1.1.2
     ethers: ^5.6.9
     events: ^3.3.0
+    graphql: ^16.6.0
     history: ^5.3.0
     http-browserify: ^1.7.0
     husky: ^8.0.1
@@ -3048,6 +3051,22 @@ __metadata:
     ethers: ^5.6.9
     graphql: ^16.0.0
   checksum: cabfcb51aa4bedb219b7f72e064e8d8b75f0b35ef45c9a2cc971811359e99804cecb086cbb02423cef793ed3ed9ba668176ad8a0dc0191516e6beafacf5600d3
+  languageName: node
+  linkType: hard
+
+"@superfluid-finance/sdk-core@npm:^0.5.6":
+  version: 0.5.6
+  resolution: "@superfluid-finance/sdk-core@npm:0.5.6"
+  dependencies:
+    "@superfluid-finance/metadata": "git+https://github.com/superfluid-finance/metadata.git"
+    browserify: ^17.0.0
+    graphql-request: ^4.3.0
+    lodash: ^4.17.21
+    tsify: ^5.0.4
+  peerDependencies:
+    ethers: ^5.6.9
+    graphql: ^16.0.0
+  checksum: d1b0ef35c74a6c531b895d2f1ad7af1d9ad472b79282ed3ff56d9e26bb0778b40f584fa1b1d54977bb6331303a8212317b616c1b0dd9dc3f9644051d016c7361
   languageName: node
   linkType: hard
 
@@ -8732,6 +8751,13 @@ __metadata:
   version: 2.5.1
   resolution: "decimal.js-light@npm:2.5.1"
   checksum: f5a2c7eac1c4541c8ab8a5c8abea64fc1761cefc7794bd5f8afd57a8a78d1b51785e0c4e4f85f4895a043eaa90ddca1edc3981d1263eb6ddce60f32bf5fe66c9
+  languageName: node
+  linkType: hard
+
+"decimal.js@npm:^10.4.0":
+  version: 10.4.0
+  resolution: "decimal.js@npm:10.4.0"
+  checksum: 98702d9d817a9e5b3767ea6580e7f3b35544b9454e463a5dd5d3232131470f39067d02864c45cab009eb1200bc162cd26a33d34c622cd79e4657a3e25e95fb4e
   languageName: node
   linkType: hard
 

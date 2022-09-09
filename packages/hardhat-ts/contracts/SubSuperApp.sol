@@ -53,6 +53,10 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
 
   uint256[] public tiers;
 
+  event Subscription_Created(address subscriber);
+  event Subscription_Updated(address subscriber);
+  event Subscription_Terminated(address subscriber);
+
   constructor(
     ISuperfluid _host,
     ISuperToken _acceptedToken,
@@ -104,6 +108,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     bytes calldata _ctx
   ) external override onlyExpected(_superToken, _agreementClass) onlyHost returns (bytes memory newCtx) {
     (address sender, ) = abi.decode(_agreementData, (address, address));
+
     if (balanceOf(sender) > 0) {
       uint256 passId = tokenOfOwnerByIndex(sender, 0);
       activePass[sender] = passId;
@@ -111,6 +116,8 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     } else {
       _issuePass(sender);
     }
+
+    emit Subscription_Created(sender);
     newCtx = _ctx;
   }
 
@@ -137,7 +144,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     (address sender, ) = abi.decode(_agreementData, (address, address));
 
     _logPass(activePass[sender], oldTimestamp, oldFlowRate);
-
+    emit Subscription_Updated(sender);
     newCtx = _ctx;
   }
 
@@ -164,11 +171,14 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     (uint256 timestamp, int96 flowRate) = abi.decode(_cbdata, (uint256, int96));
 
     uint256 passId = activePass[sender];
+
     if (passId > 0) {
       _logPass(passId, timestamp, flowRate);
       _deactivatePass(passId);
       _clearActivePass(sender);
     }
+
+    emit Subscription_Terminated(sender);
     newCtx = _ctx;
   }
 

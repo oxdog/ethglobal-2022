@@ -26,4 +26,18 @@ module.exports = {
     es6: true,
     node: true,
   },
-};
+  rules: {
+    'prettier/prettier': [
+      'warn',
+      {
+        endOfLine: 'auto',
+        semi: false,
+      },
+    ],
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
+    '@typescript-eslint/no-misused-promises': 'off',
+    '@typescript-eslint/no-unsafe-member-access': 'off',
+    '@typescript-eslint/no-empty-interface': 'off',
+  },
+}

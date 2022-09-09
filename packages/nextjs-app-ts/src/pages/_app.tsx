@@ -1,19 +1,19 @@
-import '~~/styles/globals.css';
-// import '~~/styles/tailwind.css';
+import '~~/styles/globals.css'
+import '~~/styles/tailwind.css'
 
-import createCache from '@emotion/cache';
-import { CacheProvider } from '@emotion/react';
-import { EthComponentsSettingsContext, IEthComponentsSettings } from 'eth-components/models';
-import { EthersAppContext } from 'eth-hooks/context';
-import type { AppProps } from 'next/app';
-import React, { FC, ReactNode, Suspense, useState } from 'react';
-import { ThemeSwitcherProvider } from 'react-css-theme-switcher';
-import { Hydrate, QueryClient, QueryClientProvider } from 'react-query';
+import createCache from '@emotion/cache'
+import { CacheProvider } from '@emotion/react'
+import { EthComponentsSettingsContext, IEthComponentsSettings } from 'eth-components/models'
+import { EthersAppContext } from 'eth-hooks/context'
+import type { AppProps } from 'next/app'
+import React, { FC, ReactNode, Suspense, useState } from 'react'
+import { ThemeSwitcherProvider } from 'react-css-theme-switcher'
+import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
 
-import { ErrorBoundary, ErrorFallback } from '~common/components';
-import { BLOCKNATIVE_DAPPID } from '~~/config/app.config';
+import { ErrorBoundary, ErrorFallback } from '~common/components'
+import { BLOCKNATIVE_DAPPID } from '~~/config/app.config'
 
-const cache = createCache({ key: 'next' });
+const cache = createCache({ key: 'next' })
 
 /**
  * ⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️⛳️
@@ -24,23 +24,23 @@ const cache = createCache({ key: 'next' });
  * You don't need to change this file!!
  */
 
-console.log('init app...');
+console.log('init app...')
 
 // load saved theme
-const savedTheme = 'light';
+const savedTheme = 'light'
 
 // setup themes for theme switcher
 const themes = {
   dark: './ant-dark-theme.css',
   light: './ant-light-theme.css',
-};
+}
 
 // create eth components context for options and API keys
 const ethComponentsSettings: IEthComponentsSettings = {
   apiKeys: {
     BlocknativeDappId: BLOCKNATIVE_DAPPID,
   },
-};
+}
 
 const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
   return (
@@ -53,8 +53,8 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
         </ErrorBoundary>
       </EthersAppContext>
     </EthComponentsSettingsContext.Provider>
-  );
-};
+  )
+}
 
 /**
  * ### Summary
@@ -63,9 +63,9 @@ const ProviderWrapper: FC<{ children?: ReactNode }> = (props) => {
  * @returns
  */
 const App: FC<AppProps> = ({ Component, ...props }) => {
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient())
 
-  console.log('loading app...');
+  console.log('loading app...')
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <CacheProvider value={cache}>
@@ -80,7 +80,7 @@ const App: FC<AppProps> = ({ Component, ...props }) => {
         </QueryClientProvider>
       </CacheProvider>
     </ErrorBoundary>
-  );
-};
+  )
+}
 
-export default App;
+export default App
