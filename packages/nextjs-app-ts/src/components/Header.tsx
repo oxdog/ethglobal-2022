@@ -1,7 +1,6 @@
 import { getNetwork } from '@ethersproject/networks'
 import { Alert, PageHeader } from 'antd'
 import { Account } from 'eth-components/ant'
-import { EthComponentsSettingsContext } from 'eth-components/models'
 import {
   connectorErrorText,
   CouldNotActivateError,
@@ -9,7 +8,7 @@ import {
   useEthersAppContext,
   UserClosedModalError,
 } from 'eth-hooks/context'
-import { FC, ReactElement, ReactNode, useCallback, useContext } from 'react'
+import { FC, ReactElement, ReactNode, useCallback } from 'react'
 
 import { useAntNotification } from '~common/components/hooks'
 import { IScaffoldAppProviders } from '~common/models'
@@ -26,7 +25,7 @@ export interface IMainPageHeaderProps {
  * @returns
  */
 export const Header: FC<IMainPageHeaderProps> = (props) => {
-  const settingsContext = useContext(EthComponentsSettingsContext)
+  // const settingsContext = useContext(EthComponentsSettingsContext)
   const ethersAppContext = useEthersAppContext()
   const selectedChainId = ethersAppContext.chainId
 

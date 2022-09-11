@@ -224,7 +224,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     uint256 _timestamp,
     int96 _flowRate
   ) internal {
-    (uint256 _tier, uint256 _TTV) = _calculatePass(_passId, _timestamp, _flowRate);
+    (, uint256 _TTV) = _calculatePass(_passId, _timestamp, _flowRate);
     TTV[_passId] = _TTV;
     // permaTier[_passId] = _tier;
   }
@@ -274,5 +274,33 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
 
   function updateTier(uint256[] calldata _newTiers) external onlyOwner {
     tiers = _newTiers;
+  }
+
+  function getPassdata(uint256 _tokenId)
+    external
+    view
+    returns (
+      bool active,
+      uint256 passBalance,
+      uint256 balanceTimestamp,
+      int96 flowRate,
+      uint256 tier,
+      uint256 toNextTier
+    )
+  {
+    require(_exists(_tokenId), "Invalid PassId");
+    active = passState[_tokenId];
+    address owner = ownerOf(_tokenId);
+    (uint256 timestamp, int96 _flowRate, , ) = cfaV1Lib.cfa.getFlow(acceptedToken, owner, address(this));
+    (tier, passBalance) = _calculatePass(_tokenId, timestamp, flowRate);
+    flowRate = _flowRate;
+    balanceTimestamp = block.timestamp;
+
+    if (tier < tiers.length - 1) {
+      uint256 nextTier = tiers[tier];
+      toNextTier = nextTier - passBalance;
+    } else {
+      toNextTier = 0;
+    }
   }
 }

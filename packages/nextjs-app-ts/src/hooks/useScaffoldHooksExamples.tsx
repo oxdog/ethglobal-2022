@@ -141,5 +141,15 @@ export const useScaffoldHooksExamples = (scaffoldAppProviders: IScaffoldAppProvi
       console.log('💵 yourMainnetDAIBalance', myMainnetDAIBalance ?? '...')
       console.log('⛽ gasPrice', gasPrice)
     }
-  }, [scaffoldAppProviders.mainnetAdaptor, ethersAppContext.account, ethersAppContext.provider])
+  }, [
+    scaffoldAppProviders.mainnetAdaptor,
+    ethersAppContext.account,
+    ethersAppContext.provider,
+    scaffoldAppProviders?.localAdaptor?.chainId,
+    currentChainId,
+    yourLocalBalance,
+    mainnetDai,
+    myMainnetDAIBalance,
+    gasPrice,
+  ])
 }

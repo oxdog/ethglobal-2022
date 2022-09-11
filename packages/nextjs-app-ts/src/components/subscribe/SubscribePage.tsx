@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import { Framework } from '@superfluid-finance/sdk-core'
-import { useEthersAdaptorFromProviderOrSigners } from 'eth-hooks'
+import { useEthersAdaptorFromProviderOrSigners, useSignerAddress } from 'eth-hooks'
 import { useEthersAppContext } from 'eth-hooks/context'
 import { asEthersAdaptor } from 'eth-hooks/functions'
 import { Signer } from 'ethers'
@@ -20,6 +20,7 @@ import {
   MAINNET_PROVIDER,
   TARGET_NETWORK_INFO,
 } from '~~/config/app.config'
+import { useScaffoldHooksExamples } from '~~/hooks/useScaffoldHooksExamples'
 
 interface iSubscriptionPageProps {
   pageName: string
@@ -47,6 +48,9 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
 
   // 🦊 Get your web3 ethers context from current providers
   const context = useEthersAppContext()
+
+  useScaffoldHooksExamples(scaffoldAppProviders)
+  const [myAddress] = useSignerAddress(context.signer)
 
   // -----------------------------
   // Load Contracts
@@ -101,8 +105,14 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
       console.log('Waiting for TX to complete')
 
       setTxMessage('⏳🥪 Creating Supersub...')
-      await context.provider?.waitForTransaction(result.hash)
-      setTxMessage('✅🥪 Supersub created!')
+      const recipe = await context.provider?.waitForTransaction(result.hash)
+      console.log('recipe', recipe)
+
+      if (recipe?.status === 0) {
+        setTxMessage('❌🥪 Transaction failed!')
+      } else {
+        setTxMessage('✅🥪 Supersub created!')
+      }
 
       // setTimeout(function () {
       //   setTxMessage('')

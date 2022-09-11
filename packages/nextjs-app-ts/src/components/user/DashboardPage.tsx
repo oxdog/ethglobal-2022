@@ -20,11 +20,15 @@ import {
   MAINNET_PROVIDER,
   TARGET_NETWORK_INFO,
 } from '~~/config/app.config'
+import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
+import { useAppSelector } from '~~/redux/hooks'
 
 interface UserDashboardPageProps {}
 
 export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({}) => {
   const notificationHolder = useCreateAntNotificationHolder()
+  useLoadUserOnWalletConnect()
+  const { initiated, loading } = useAppSelector((state) => state.subs)
 
   // -----------------------------
   // Providers, signers & wallets
@@ -67,14 +71,23 @@ export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({}) => {
 
       <div className="h-screen flex justify-center">
         <div className="w-full max-w-4xl pt-24">
-          <h1>Your subscriptions</h1>
-          <div className="h-px bg-gray-200" />
-          <div className="pt-16 grid grid-cols-2 gap-8">
-            <Subscription />
-            <Subscription />
-            <Subscription />
-            <Subscription />
-          </div>
+          {loading ? (
+            <h1>Loading...</h1>
+          ) : initiated ? (
+            <>
+              <h1>Your subscriptions</h1>
+              <div className="h-px bg-gray-200" />
+              <div className="pt-16 grid grid-cols-2 gap-8">
+                <Subscription />
+                <Subscription />
+                <Subscription />
+                <Subscription />
+              </div>
+            </>
+          ) : (
+            <h1>Please connect your wallet</h1>
+          )}
+          {}
         </div>
       </div>
 

@@ -1,18 +1,18 @@
-import { Row, Col, Button } from 'antd';
-import { Faucet, GasGauge } from 'eth-components/ant';
-import { useEthersAppContext } from 'eth-hooks/context';
-import React, { FC, ReactNode, Suspense } from 'react';
+import { Row, Col, Button } from 'antd'
+import { Faucet, GasGauge } from 'eth-components/ant'
+import { useEthersAppContext } from 'eth-hooks/context'
+import React, { FC, ReactNode, Suspense } from 'react'
 
-import { Ramp, getFaucetAvailable, ThemeSwitcher } from '~common/components';
-import { NETWORKS } from '~common/constants';
-import { getNetworkInfo } from '~common/functions';
-import { IScaffoldAppProviders } from '~common/models';
-import { FAUCET_ENABLED } from '~~/config/app.config';
+import { Ramp, getFaucetAvailable, ThemeSwitcher } from '~common/components'
+import { NETWORKS } from '~common/constants'
+import { getNetworkInfo } from '~common/functions'
+import { IScaffoldAppProviders } from '~common/models'
+import { FAUCET_ENABLED } from '~~/config/app.config'
 
 export interface IMainPageFooterProps {
-  scaffoldAppProviders: IScaffoldAppProviders;
-  price: number;
-  children?: ReactNode;
+  scaffoldAppProviders: IScaffoldAppProviders
+  price: number
+  children?: ReactNode
 }
 
 /**
@@ -21,12 +21,12 @@ export interface IMainPageFooterProps {
  * @returns
  */
 export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
-  const ethersAppContext = useEthersAppContext();
+  const ethersAppContext = useEthersAppContext()
 
   // Faucet Tx can be used to send funds from the faucet
-  const faucetAvailable = getFaucetAvailable(props.scaffoldAppProviders, ethersAppContext, FAUCET_ENABLED);
+  const faucetAvailable = getFaucetAvailable(props.scaffoldAppProviders, ethersAppContext, FAUCET_ENABLED)
 
-  const network = getNetworkInfo(ethersAppContext.chainId);
+  const network = getNetworkInfo(ethersAppContext.chainId)
 
   const left = (
     <div
@@ -63,7 +63,7 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
           }}>
           <Button
             onClick={(): void => {
-              window.open('https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA');
+              window.open('https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA')
             }}
             size="large"
             shape="round">
@@ -99,14 +99,14 @@ export const MainPageFooter: FC<IMainPageFooterProps> = (props) => {
         </Col>
       </Row>
     </div>
-  );
+  )
 
-  const right = <ThemeSwitcher />;
+  const right = <ThemeSwitcher />
 
   return (
     <>
       {left}
       <Suspense fallback={<div></div>}>{right}</Suspense>
     </>
-  );
-};
+  )
+}

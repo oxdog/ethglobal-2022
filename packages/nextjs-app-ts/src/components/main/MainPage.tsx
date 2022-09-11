@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 
 import { GenericContract } from 'eth-components/ant/generic-contract'
-import { useBalance, useEthersAdaptorFromProviderOrSigners, useEventListener } from 'eth-hooks'
+import { useBalance, useEthersAdaptorFromProviderOrSigners } from 'eth-hooks'
 import { useEthersAppContext } from 'eth-hooks/context'
 import { useDexEthPrice } from 'eth-hooks/dapps'
 import { asEthersAdaptor } from 'eth-hooks/functions'
@@ -101,7 +101,7 @@ export const MainPage: FC<IMainPageProps> = (props) => {
   // );
 
   // 📟 Listen for broadcast events
-  const [setPurposeEvents] = useEventListener(Subscription_SuperApp, 'SetPurpose', 0)
+  // const [setPurposeEvents] = useEventListener(Subscription_SuperApp, 'SetPurpose', 0)
 
   // -----------------------------
   // .... 🎇 End of examples

@@ -6,12 +6,14 @@ import { CacheProvider } from '@emotion/react'
 import { EthComponentsSettingsContext, IEthComponentsSettings } from 'eth-components/models'
 import { EthersAppContext } from 'eth-hooks/context'
 import type { AppProps } from 'next/app'
-import React, { FC, ReactNode, Suspense, useState } from 'react'
+import { FC, ReactNode, Suspense, useState } from 'react'
 import { ThemeSwitcherProvider } from 'react-css-theme-switcher'
 import { Hydrate, QueryClient, QueryClientProvider } from 'react-query'
+import { Provider } from 'react-redux'
 
 import { ErrorBoundary, ErrorFallback } from '~common/components'
 import { BLOCKNATIVE_DAPPID } from '~~/config/app.config'
+import { store } from '~~/redux/store'
 
 const cache = createCache({ key: 'next' })
 
@@ -67,19 +69,21 @@ const App: FC<AppProps> = ({ Component, ...props }) => {
 
   console.log('loading app...')
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <CacheProvider value={cache}>
-        <QueryClientProvider client={queryClient}>
-          <Hydrate state={props.pageProps.dehydratedState}>
-            <ProviderWrapper>
-              <Suspense fallback={<div />}>
-                <Component {...props.pageProps} />
-              </Suspense>
-            </ProviderWrapper>
-          </Hydrate>
-        </QueryClientProvider>
-      </CacheProvider>
-    </ErrorBoundary>
+    <Provider store={store}>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <CacheProvider value={cache}>
+          <QueryClientProvider client={queryClient}>
+            <Hydrate state={props.pageProps.dehydratedState}>
+              <ProviderWrapper>
+                <Suspense fallback={<div />}>
+                  <Component {...props.pageProps} />
+                </Suspense>
+              </ProviderWrapper>
+            </Hydrate>
+          </QueryClientProvider>
+        </CacheProvider>
+      </ErrorBoundary>
+    </Provider>
   )
 }
 

@@ -1,25 +1,25 @@
-import { Menu } from 'antd';
-import Link from 'next/link';
-import React, { ReactElement } from 'react';
+import { Menu } from 'antd'
+import Link from 'next/link'
+import React, { ReactElement } from 'react'
 
 /**
  * A name and element that represents a page
  */
 type TContractPage = {
-  name: string;
-  content: JSX.Element;
-};
+  name: string
+  content: JSX.Element
+}
 
 export type TContractPageList = {
   /**
    * the default page to load on route '/'
    */
-  mainPage: TContractPage;
+  mainPage: TContractPage
   /**
    * an array of all the other pages
    */
-  pages: TContractPage[];
-};
+  pages: TContractPage[]
+}
 
 /**
  * Helper function that creates pages with routes.  It also creates tabs (menu items) associated with those routes, so that you can click on them to navigate to the page.
@@ -46,11 +46,11 @@ export const createTabsAndPages = (
         </Menu.Item>
       ))}
     </Menu>
-  );
+  )
 
-  const pages: Record<string, ReactElement> = {};
-  pageList.pages.map(({ name, content }) => (pages[name] = content));
-  pages['main'] = pageList.mainPage.content;
+  const pages: Record<string, ReactElement> = {}
+  pageList.pages.map(({ name, content }) => (pages[name] = content))
+  pages['main'] = pageList.mainPage.content
 
-  return { tabMenu, pages };
-};
+  return { tabMenu, pages }
+}
