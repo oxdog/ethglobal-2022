@@ -244,6 +244,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
         _tier = i;
       }
     }
+
     // _tier = _tier > permaTier[_passId] ? _tier : permaTier[_passId];
   }
 
@@ -289,18 +290,33 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     )
   {
     require(_exists(_tokenId), "Invalid PassId");
-    active = passState[_tokenId];
     address owner = ownerOf(_tokenId);
     (uint256 timestamp, int96 _flowRate, , ) = cfaV1Lib.cfa.getFlow(acceptedToken, owner, address(this));
-    (tier, passBalance) = _calculatePass(_tokenId, timestamp, flowRate);
+    (tier, passBalance) = _calculatePass(_tokenId, timestamp, _flowRate);
+
+    active = passState[_tokenId];
     flowRate = _flowRate;
     balanceTimestamp = block.timestamp;
 
     if (tier < tiers.length - 1) {
-      uint256 nextTier = tiers[tier];
+      uint256 nextTier = tiers[tier + 1];
       toNextTier = nextTier - passBalance;
     } else {
       toNextTier = 0;
     }
+  }
+
+  function generalInfo()
+    external
+    view
+    returns (
+      string memory subName,
+      string memory subSymbol,
+      uint256[] memory subTiers
+    )
+  {
+    subName = name();
+    subSymbol = symbol();
+    subTiers = tiers;
   }
 }

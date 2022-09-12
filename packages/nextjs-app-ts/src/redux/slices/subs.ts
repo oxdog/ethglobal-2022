@@ -1,22 +1,25 @@
 // prettier-ignore
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { BigNumber, ethers } from 'ethers'
+import _ from 'lodash'
 
 import { Subscription_SuperApp } from '~common/generated/contract-types'
 import hardhatDeployedContractsJson from '~common/generated/hardhat_contracts.json'
 
-type Subscription = {
+export type TSubscription = {
+  name: string
+  address: string
   active: boolean
-  passBalance: BigNumber
-  balanceTimestamp: BigNumber
-  flowRate: BigNumber
-  tier: BigNumber
-  toNextTier: BigNumber
-  availableTiers: BigNumber[]
+  passBalance: string
+  balanceTimestamp: string
+  flowRate: string
+  tier: number
+  toNextTier: string
+  availableTiers: string[]
 }
 
 interface SubState {
-  subscriptions: Subscription[]
+  subscriptions: TSubscription[]
   loading: boolean
   initiated: boolean
 }
@@ -34,6 +37,7 @@ const SSA = new ethers.Contract(SSAJson.address, SSAJson.abi, provider) as Subsc
 
 const initSubscriptions = createAsyncThunk('sub/initSubs', async (account: string, _thunkAPI) => {
   try {
+    const generalInfo = await SSA.generalInfo()
     const balance = (await SSA.balanceOf(account)).toNumber()
     const tokenIdPromises = Array(balance)
       .fill('X')
@@ -42,9 +46,17 @@ const initSubscriptions = createAsyncThunk('sub/initSubs', async (account: strin
 
     const passData = await Promise.all(tokenIds.map((id) => SSA.getPassdata(id)))
 
-    console.log(passData)
-
-    return passData
+    return _.map(passData, (p) => ({
+      name: generalInfo.subName,
+      address: SSA.address,
+      active: p.active,
+      passBalance: p.passBalance.toString(),
+      balanceTimestamp: p.balanceTimestamp.toString(),
+      flowRate: p.flowRate.toString(),
+      tier: p.tier.toNumber(),
+      toNextTier: p.toNextTier.toString(),
+      availableTiers: _.map(generalInfo.subTiers, (t) => t.toString()),
+    })) as Array<TSubscription>
   } catch (e) {
     console.error('error', e)
     return []
@@ -69,16 +81,7 @@ export const subSlice = createSlice({
       console.log(action)
       const { payload } = action
 
-      state.subscriptions = payload.map((p) => ({
-        active: p.active,
-        passBalance: p.passBalance,
-        balanceTimestamp: p.balanceTimestamp,
-        flowRate: p.flowRate,
-        tier: p.tier,
-        toNextTier: p.toNextTier,
-        availableTiers: [BigNumber.from('0')],
-      }))
-
+      state.subscriptions = payload
       state.loading = false
       state.initiated = true
     })

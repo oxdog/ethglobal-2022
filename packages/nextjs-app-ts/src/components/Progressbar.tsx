@@ -1,40 +1,37 @@
-import { BigNumber, BigNumberish } from 'ethers'
+import { BigNumber } from 'ethers'
 import { FC, ReactElement, useEffect, useMemo, useState } from 'react'
-
-import EtherFormatted from './EtherFormatted'
-
-// import _ from 'lodash'
 
 const ANIMATION_MINIMUM_STEP_TIME = 80
 
-export interface FlowingBalanceProps {
+export interface ProgressBarProps {
+  fromBalance: string
+  toNextTier: string
   balance: string
-  /**
-   * Timestamp in Subgraph's UTC.
-   */
   balanceTimestamp: number
   flowRate: string
-  reverse?: boolean
 }
 
-const FlowingBalance: FC<FlowingBalanceProps> = ({
+const ProgressBar: FC<ProgressBarProps> = ({
+  fromBalance,
+  toNextTier,
   balance,
   balanceTimestamp,
   flowRate,
-  reverse = false,
 }): ReactElement => {
-  const [weiValue, setWeiValue] = useState<BigNumberish>(balance)
-  useEffect(() => setWeiValue(balance), [balance])
+  const [progress, setProgress] = useState<number>(0)
 
   const balanceTimestampMs = useMemo(() => BigNumber.from(balanceTimestamp).mul(1000), [balanceTimestamp])
 
   useEffect(() => {
+    const fromBN = BigNumber.from(fromBalance)
+    const balanceBN = BigNumber.from(balance).sub(fromBN)
+    const toBN = BigNumber.from(toNextTier).add(balanceBN)
     const flowRateBigNumber = BigNumber.from(flowRate)
     if (flowRateBigNumber.isZero()) {
+      const percent = balanceBN.mul(100).div(toBN)
+      setProgress(percent.toNumber())
       return // No need to show animation when flow rate is zero.
     }
-
-    const balanceBigNumber = BigNumber.from(balance)
 
     let stopAnimation = false
     let lastAnimationTimestamp: DOMHighResTimeStamp = 0
@@ -49,20 +46,15 @@ const FlowingBalance: FC<FlowingBalanceProps> = ({
           new Date().valueOf() // Milliseconds elapsed since UTC epoch, disregards timezone.
         )
 
-        if (reverse) {
-          const nextBalance = balanceBigNumber.sub(
-            currentTimestampBigNumber.sub(balanceTimestampMs).mul(flowRateBigNumber).div(1000)
-          )
+        const currentBN = balanceBN.add(
+          currentTimestampBigNumber.sub(balanceTimestampMs).mul(flowRateBigNumber).div(1000)
+        )
 
-          if (nextBalance.gt(0)) {
-            setWeiValue(nextBalance)
-          } else {
-            setWeiValue(BigNumber.from('0'))
-          }
+        if (currentBN.gt(toBN)) {
+          setProgress(100)
         } else {
-          setWeiValue(
-            balanceBigNumber.add(currentTimestampBigNumber.sub(balanceTimestampMs).mul(flowRateBigNumber).div(1000))
-          )
+          const percent = currentBN.mul(100).div(toBN)
+          setProgress(percent.toNumber())
         }
 
         lastAnimationTimestamp = currentAnimationTimestamp
@@ -86,11 +78,12 @@ const FlowingBalance: FC<FlowingBalanceProps> = ({
     //   sx={{
     //     textOverflow: 'ellipsis',
     //   }}>
-    <>
-      <EtherFormatted wei={weiValue} />
-    </>
+    <div className="flex bg-gray-200 h-4 w-full">
+      <div className="bg-cyan-400 z-10" style={{ width: `${progress}%` }} />
+      {/* <div className="absolute bottom-0 bg-gray-200 w-full h-4" /> */}
+    </div>
     // </Box>
   )
 }
 
-export default FlowingBalance
+export default ProgressBar

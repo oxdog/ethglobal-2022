@@ -128,7 +128,7 @@ describe('Subscription', function () {
         expect(await sub.tokenOfOwnerByIndex(user1.address, 0)).to.be.equal(1)
       })
 
-      describe('Subscriber owns 2 passes', function () {
+      describe.only('Subscriber owns 2 passes', function () {
         beforeEach(async () => {
           const createFlowOperation1 = createFlow()
           await createFlowOperation1.exec(user1)

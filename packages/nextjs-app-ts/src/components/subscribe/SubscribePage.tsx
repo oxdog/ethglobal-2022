@@ -154,7 +154,7 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
           {txMessage !== '' ? (
             <p className="text-2xl">{txMessage}</p>
           ) : (
-            <button disabled={!context.provider} onClick={() => createFlow(contract, '10000000')}>
+            <button disabled={!context.provider} onClick={() => createFlow(contract, '58273944574335')}>
               {!context.provider ? 'Connect Wallet' : 'Subscribe'}
             </button>
           )}

@@ -5,7 +5,7 @@ import { FC } from 'react'
 
 const EtherFormatted: FC<{ wei: BigNumberish }> = ({ wei }) => {
   // const etherDecimalPlaces = useAppSelector((state) => state.appPreferences.etherDecimalPlaces)
-  const etherDecimalPlaces = 10
+  const etherDecimalPlaces = 13
 
   const ether = ethers.utils.formatEther(wei)
   // const isRounded = ether.split('.')[1].length > etherDecimalPlaces

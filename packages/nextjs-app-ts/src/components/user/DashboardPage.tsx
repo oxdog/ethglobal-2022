@@ -28,7 +28,7 @@ interface UserDashboardPageProps {}
 export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({}) => {
   const notificationHolder = useCreateAntNotificationHolder()
   useLoadUserOnWalletConnect()
-  const { initiated, loading } = useAppSelector((state) => state.subs)
+  const { initiated, loading, subscriptions } = useAppSelector((state) => state.subs)
 
   // -----------------------------
   // Providers, signers & wallets
@@ -78,10 +78,9 @@ export const UserDashboardPage: React.FC<UserDashboardPageProps> = ({}) => {
               <h1>Your subscriptions</h1>
               <div className="h-px bg-gray-200" />
               <div className="pt-16 grid grid-cols-2 gap-8">
-                <Subscription />
-                <Subscription />
-                <Subscription />
-                <Subscription />
+                {subscriptions.map((s, i: number) => (
+                  <Subscription subscriptions={s} key={`sub${i}`} />
+                ))}
               </div>
             </>
           ) : (
