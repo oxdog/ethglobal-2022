@@ -21,6 +21,7 @@ import {
   TARGET_NETWORK_INFO,
 } from '~~/config/app.config'
 import { useScaffoldHooksExamples } from '~~/hooks/useScaffoldHooksExamples'
+import { ShortAddress } from '../ShortAddress'
 
 interface iSubscriptionPageProps {
   pageName: string
@@ -85,38 +86,15 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
         // userData?: string
       })
 
-      console.log('Creating your stream...')
-
       const result = await createFlowOperation.exec(context.signer as Signer)
-      console.log(result)
-
-      console.log(
-        `
-          Congrats - you've just created a money stream!
-            View Your Stream At: https://app.superfluid.finance/dashboard/${receiver}
-            Network: Goerli
-            Super Token: DAIx
-            Sender: 0xDCB45e4f6762C3D7C61a00e96Fb94ADb7Cf27721
-            Receiver: ${receiver},
-            FlowRate: ${flowRate}
-      `
-      )
-
-      console.log('Waiting for TX to complete')
 
       setTxMessage('⏳🥪 Creating Supersub...')
       const recipe = await context.provider?.waitForTransaction(result.hash)
-      console.log('recipe', recipe)
-
       if (recipe?.status === 0) {
         setTxMessage('❌🥪 Transaction failed!')
       } else {
         setTxMessage('✅🥪 Supersub created!')
       }
-
-      // setTimeout(function () {
-      //   setTxMessage('')
-      // }, 4000)
     } catch (error: any) {
       console.log(
         "Hmmm, your transaction threw an error. Make sure that this stream does not already exist, and that you've entered a valid Ethereum address!"
@@ -150,7 +128,14 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
         </div>
         <h1 className="w-min text-3xl">Supersub</h1>
         <div className="flex flex-col items-center justify-center space-y-8">
-          <div className="text-gray-400">{contract}</div>
+          <a
+            href={`https://goerli.etherscan.io/address/${contract}`}
+            target="_blank"
+            rel="noreferrer"
+            className="no-underline group-hover:text-gray-400 tracking-wider cursor-pointer">
+            <ShortAddress address={contract} />
+          </a>
+
           {txMessage !== '' ? (
             <p className="text-2xl">{txMessage}</p>
           ) : (

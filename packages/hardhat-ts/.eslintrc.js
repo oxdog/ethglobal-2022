@@ -52,15 +52,6 @@ module.exports = {
     '@typescript-eslint/restrict-template-expressions': ['warn', { allowBoolean: true, allowNumber: true }],
     'prefer-destructuring': 'off',
     'no-param-reassign': 'error',
-    'import/order': [
-      'warn',
-      {
-        alphabetize: {
-          order: 'asc' /* sort in ascending order. Options: ['ignore', 'asc', 'desc'] */,
-          caseInsensitive: true /* ignore case. Options: [true, false] */,
-        },
-      },
-    ],
     'no-duplicate-imports': 'warn',
     'import/named': 'off',
     'import/namespace': 'off',
@@ -107,4 +98,4 @@ module.exports = {
     },
   ],
   settings: {},
-};
+}

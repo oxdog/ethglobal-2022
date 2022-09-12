@@ -96,16 +96,6 @@ module.exports = {
     'prefer-template': 'off',
     'react/destructuring-assignment': 'off',
     'no-param-reassign': 'error',
-    'import/order': [
-      'warn',
-      {
-        alphabetize: {
-          order: 'asc' /* sort in ascending order. Options: ['ignore', 'asc', 'desc'] */,
-          caseInsensitive: true /* ignore case. Options: [true, false] */,
-        },
-        'newlines-between': 'always',
-      },
-    ],
     'no-duplicate-imports': 'warn',
     'import/named': 'off',
     'import/namespace': 'off',

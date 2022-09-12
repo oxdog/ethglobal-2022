@@ -1,5 +1,5 @@
 // prettier-ignore
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { BigNumber, ethers } from 'ethers'
 import _ from 'lodash'
 
@@ -74,6 +74,20 @@ export const subSlice = createSlice({
       state.initiated = false
       state.subscriptions = []
     },
+    pauseSub: (state, action: PayloadAction<{ address: string; balance: string }>) => {
+      const filter = action.payload
+      state.subscriptions = _.map(state.subscriptions, (sub) => {
+        if (sub.address === filter.address || sub.passBalance === filter.balance) {
+          return {
+            ...sub,
+            active: false,
+            flowRate: '0',
+          }
+        } else {
+          return sub
+        }
+      })
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(initSubscriptions.fulfilled, (state, action) => {
@@ -94,7 +108,7 @@ export const subSlice = createSlice({
   },
 })
 
-const { resetSubs } = subSlice.actions
+const { resetSubs, pauseSub } = subSlice.actions
 
-export { initSubscriptions, resetSubs }
+export { initSubscriptions, resetSubs, pauseSub }
 export default subSlice.reducer
