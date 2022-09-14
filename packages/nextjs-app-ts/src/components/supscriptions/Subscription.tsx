@@ -9,6 +9,7 @@ import { ShortAddress } from '../ShortAddress'
 
 import { TSubscription } from '~~/redux/slices/subs'
 import { useAppDispatch } from '~~/redux/hooks'
+import { EmojiBubble } from '../EmojiBubble'
 
 interface SubscriptionProps {
   subscriptions: TSubscription
@@ -76,9 +77,7 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
     <div className="group relative flex flex-col items-center justify-center bg-gray-50 py-8 px-4 rounded-xl shadow-md overflow-hidden">
       <div className="flex flex-row w-full justify-around items-start">
         <div className="flex flex-col items-center">
-          <div className="text-5xl bg-gray-200 rounded-full h-24 w-24 flex items-center justify-center pb-1 shadow-md shadow-cyan-400">
-            🥪
-          </div>
+          <EmojiBubble emoji="🥪" />
           <div className="pt-4 w-min text-3xl">{sub.name}</div>
           <div className="flex flex-col items-center justify-center space-y-8"></div>
         </div>

@@ -278,7 +278,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
   }
 
   function getPassdata(uint256 _tokenId)
-    external
+    public
     view
     returns (
       bool active,
@@ -318,5 +318,19 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     subName = name();
     subSymbol = symbol();
     subTiers = tiers;
+  }
+
+  function payout() external onlyOwner {
+    acceptedToken.transferAll(msg.sender);
+  }
+
+  function getPassdataViaAddress(address _target) external view returns (bool active, uint256 tier) {
+    uint256 passId = activePass[_target];
+    if (passId == 0) {
+      active = false;
+      tier = 0;
+    } else {
+      (active, , , , tier, ) = getPassdata(passId);
+    }
   }
 }

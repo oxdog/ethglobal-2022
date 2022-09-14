@@ -21,6 +21,7 @@ import {
   TARGET_NETWORK_INFO,
 } from '~~/config/app.config'
 import { useScaffoldHooksExamples } from '~~/hooks/useScaffoldHooksExamples'
+import { EmojiBubble } from '../EmojiBubble'
 import { ShortAddress } from '../ShortAddress'
 
 interface iSubscriptionPageProps {
@@ -123,9 +124,8 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
       <Header scaffoldAppProviders={scaffoldAppProviders} />
 
       <div className="w-screen h-screen flex flex-col items-center justify-center">
-        <div className="text-5xl bg-gray-200 rounded-full h-24 w-24 flex items-center justify-center pb-1 shadow-md shadow-cyan-400">
-          🥪
-        </div>
+        <EmojiBubble emoji="🥪" />
+
         <h1 className="w-min text-3xl">Supersub</h1>
         <div className="flex flex-col items-center justify-center space-y-8">
           <a
