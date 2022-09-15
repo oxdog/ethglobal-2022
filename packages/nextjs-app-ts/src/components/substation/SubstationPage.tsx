@@ -19,18 +19,20 @@ import {
   TARGET_NETWORK_INFO,
 } from '~~/config/app.config'
 import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
+import { TSubstation } from '~~/pages/user/substations'
 import { Substation } from './Substation'
 
 interface SubstationsPageProps {
-  substations: string[]
+  substations: TSubstation[]
 }
 
 export const SubstationPage: React.FC<SubstationsPageProps> = ({ substations }) => {
-  const notificationHolder = useCreateAntNotificationHolder()
   useLoadUserOnWalletConnect()
-
   const [initiate, setInitiate] = useState<boolean>(false)
 
+  useEffect(() => console.log('substations', substations), [substations])
+
+  const notificationHolder = useCreateAntNotificationHolder()
   const scaffoldAppProviders = useScaffoldAppProviders({
     targetNetwork: TARGET_NETWORK_INFO,
     connectToBurnerAutomatically: CONNECT_TO_BURNER_AUTOMATICALLY,
@@ -70,21 +72,24 @@ export const SubstationPage: React.FC<SubstationsPageProps> = ({ substations }) 
       </Head>
       <Header scaffoldAppProviders={scaffoldAppProviders} />
 
-      <div className="h-screen pt-20 flex flex-col items-center space-y-4">
+      <div className="pt-20 flex flex-col items-center space-y-4">
         <h1>Your Substations</h1>
-        {substations}
-        <Substation
-          name="oxdog.eth Secrets"
-          symbol="OXS"
-          address="0xA4fFE1Bc6bF4D56509c25AA24930b6b00E3C4567"
-          balance="234567876543234567"
-          balanceTimestamp={1662974089}
-          flowRate="34567765432123456"
-        />
+        {substations.map((s, i) => (
+          <Substation
+            key={s.name + i}
+            name={s.name}
+            symbol={s.symbol}
+            address={s.address}
+            balance={s.balance}
+            balanceTimestamp={s.balanceTimestamp}
+            flowRate={s.flowRate}
+            tiers={s.tiers}
+          />
+        ))}
       </div>
 
-      <div className="sticky bottom-0 text-center w-full h-8 bg-green-400">
-        This page is usually only available to creators of the SubStations (where user can subscribe to). For demo
+      <div className="sticky bottom-0 text-center text-white font-bold w-full h-8 pt-2 bg-green-400">
+        This page is usually only available to creators of the SubStation (where user can subscribe to). For demo
         purposes it can be viewed by all.
       </div>
 

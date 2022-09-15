@@ -5,7 +5,6 @@ import { GetServerSideProps } from 'next'
 import { FC } from 'react'
 import ProtectedPage from '~~/components/protected/ProtectedPage'
 
-// eslint-disable-next-line @typescript-eslint/require-await
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
   const { id } = query
   const cookies = new Cookies(req, res)

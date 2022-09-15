@@ -170,7 +170,6 @@ const Page: FC = ({}) => {
   }
 
   const connect = async () => {
-    // const id = 2 // ! TBD
     const resourceId = {
       baseUrl: 'http://localhost:3000',
       path: '/protected',
