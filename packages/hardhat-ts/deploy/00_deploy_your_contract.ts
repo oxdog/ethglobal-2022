@@ -15,7 +15,14 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
   await deploy('Subscription_SuperApp', {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [SUPERFLUID_HOST, DAIX, 'TestSub', 'TESU', [0, utils.parseEther('1'), utils.parseEther('2'), utils.parseEther('3')]],
+    args: [
+      SUPERFLUID_HOST,
+      DAIX,
+      'TestSub',
+      'TESU',
+      'bafybeidytala2n2enpwndjb2uku7gs7geh4tvho55aseiyavl77uk7xj6i',
+      [0, utils.parseEther('1'), utils.parseEther('2'), utils.parseEther('3')],
+    ],
     log: true,
     gasLimit: 10_000_000,
   })

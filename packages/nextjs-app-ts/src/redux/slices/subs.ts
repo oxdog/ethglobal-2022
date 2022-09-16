@@ -4,10 +4,11 @@ import { BigNumber, ethers } from 'ethers'
 import _ from 'lodash'
 
 import { Subscription_SuperApp } from '~common/generated/contract-types'
-import hardhatDeployedContractsJson from '~common/generated/hardhat_contracts.json'
+import { SSAJson } from '~~/helpers/constants'
 
 export type TSubscription = {
   name: string
+  w3name: string
   address: string
   active: boolean
   passBalance: string
@@ -31,7 +32,6 @@ const initialState: SubState = {
   initiated: false,
 }
 
-const SSAJson = hardhatDeployedContractsJson[5][0].contracts.Subscription_SuperApp as { address: string; abi: [] }
 const provider = new ethers.providers.AlchemyProvider('goerli', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
 const SSA = new ethers.Contract(SSAJson.address, SSAJson.abi, provider) as Subscription_SuperApp
 
@@ -48,6 +48,7 @@ const initSubscriptions = createAsyncThunk('sub/initSubs', async (account: strin
 
     return _.map(passData, (p) => ({
       name: generalInfo.subName,
+      w3name: generalInfo.subW3name,
       address: SSA.address,
       active: p.active,
       passBalance: p.passBalance.toString(),
@@ -91,10 +92,7 @@ export const subSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(initSubscriptions.fulfilled, (state, action) => {
-      console.log('fulfilled')
-      console.log(action)
       const { payload } = action
-
       state.subscriptions = payload
       state.loading = false
       state.initiated = true

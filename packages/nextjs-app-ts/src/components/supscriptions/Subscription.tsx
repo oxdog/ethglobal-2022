@@ -7,7 +7,7 @@ import FlowingBalance from '../FlowingBalance'
 import ProgressBar from '../Progressbar'
 import { ShortAddress } from '../ShortAddress'
 
-import { TSubscription } from '~~/redux/slices/subs'
+import { pauseSub, TSubscription } from '~~/redux/slices/subs'
 import { useAppDispatch } from '~~/redux/hooks'
 import { EmojiBubble } from '../EmojiBubble'
 
@@ -47,6 +47,7 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
         setTxMessage('❌🥪 Failed!')
       } else {
         setTxMessage('✅🥪 Paused!')
+        dispatch(pauseSub({ address: sub.address, balance: sub.passBalance }))
         setTimeout(function () {
           setTxMessage('')
         }, 4000)
@@ -99,6 +100,14 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
             {txMessage !== '' ? txMessage : 'Pause'}
           </button>
         )}
+
+        <a
+          href={`/substation?sub=${sub.address}`}
+          target="_blank"
+          className="hover:text-gray-400 tracking-wider cursor-pointer"
+          rel="noreferrer">
+          Go to Substation
+        </a>
 
         <div className="flex flex-col items-end">
           <div className="">DAI Until next Tier</div>

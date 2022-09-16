@@ -52,6 +52,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
   // mapping(uint256 => uint256) public permaTier;
 
   uint256[] public tiers;
+  string public w3name;
 
   event Subscription_Created(address subscriber);
   event Subscription_Updated(address subscriber);
@@ -62,6 +63,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     ISuperToken _acceptedToken,
     string memory _name,
     string memory _symbol,
+    string memory _w3name,
     uint256[] memory _tiers
   ) ERC721(_name, _symbol) {
     assert(address(_host) != address(0));
@@ -80,6 +82,7 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     passTracker.increment(); //start passId at 1
 
     tiers = _tiers;
+    w3name = _w3name;
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -312,16 +315,22 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     returns (
       string memory subName,
       string memory subSymbol,
+      string memory subW3name,
       uint256[] memory subTiers
     )
   {
     subName = name();
     subSymbol = symbol();
+    subW3name = w3name;
     subTiers = tiers;
   }
 
   function payout() external onlyOwner {
     acceptedToken.transferAll(msg.sender);
+  }
+
+  function updateW3Name(string memory _w3name) external onlyOwner {
+    w3name = _w3name;
   }
 
   function getPassdataViaAddress(address _target) external view returns (bool active, uint256 tier) {

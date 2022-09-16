@@ -13,57 +13,8 @@ import {
   MAINNET_PROVIDER,
   TARGET_NETWORK_INFO,
 } from '~~/config/app.config'
-
-const chain = 'goerli'
-const functionAbi = {
-  name: 'getPassdataViaAddress',
-  inputs: [
-    {
-      name: '',
-      type: 'address',
-    },
-  ],
-  outputs: [
-    {
-      name: 'active',
-      type: 'bool',
-    },
-    {
-      name: 'tier',
-      type: 'uint256',
-    },
-  ],
-  stateMutability: 'view',
-  type: 'function',
-}
-
-const evmContractConditions = [
-  {
-    contractAddress: '0xAE774234E3B77529cf10aac7aaF1C7cC508D06Dd',
-    chain,
-    functionName: 'getPassdataViaAddress',
-    functionParams: [':userAddress'],
-    functionAbi,
-    returnValueTest: {
-      key: 'active',
-      comparator: '=',
-      value: 'true',
-    },
-  },
-  { operator: 'and' },
-  {
-    contractAddress: '0xAE774234E3B77529cf10aac7aaF1C7cC508D06Dd',
-    chain,
-    functionName: 'getPassdataViaAddress',
-    functionParams: [':userAddress'],
-    functionAbi,
-    returnValueTest: {
-      key: 'tier',
-      comparator: '>=',
-      value: '0',
-    },
-  },
-]
+import { generateEvmContractConditions } from '~~/helpers/generateEvmContractConditions'
+import { SSAJson } from '~~/helpers/constants'
 
 const getSigningMsg = (account: string, chainId: number) =>
   `Supersub wants you to sign in with your Ethereum account:\n${account}\n\nURI: ${
@@ -74,10 +25,69 @@ const getSigningMsg = (account: string, chainId: number) =>
     false
   )}\nIssued At: ${new Date().getDate()}`
 
+type EncryptedData = {
+  encryptedString: string
+  encryptedSymmetricKey: string
+}
+
+const tier1_data = {
+  posts: [
+    {
+      text: 'This is post 1 tier 1',
+    },
+    {
+      text: 'This is post 2 tier 1',
+    },
+    {
+      text: 'This is post 3 tier 1',
+    },
+  ],
+}
+
+const tier2_data = {
+  posts: [
+    {
+      text: 'This is post 1 tier 2',
+    },
+    {
+      text: 'This is post 2 tier 2',
+    },
+    {
+      text: 'This is post 3 tier 2',
+    },
+  ],
+}
+
+const tier3_data = {
+  posts: [
+    {
+      text: 'This is post 1 tier 3',
+    },
+    {
+      text: 'This is post 2 tier 3',
+    },
+    {
+      text: 'This is post 3 tier 3',
+    },
+  ],
+}
+
+const substationData = [tier1_data, tier2_data, tier3_data]
+
+const blobToB64 = (blob: Blob) =>
+  new Promise((resolve, _) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result)
+    reader.readAsDataURL(blob)
+  })
+
 const Page: FC = ({}) => {
+  const [data, setData] = useState<EncryptedData>()
   const [client, setClient] = useState<any>(undefined)
-  const [encryptedString, setEncryptedString] = useState<any>()
-  const [encryptedSymmetricKey, setEncryptedSymmetricKey] = useState<any>()
+
+  const chain = 'goerli'
+  const evmContractConditions = generateEvmContractConditions(SSAJson.address, chain, 0)
+
   const context = useEthersAppContext()
   const scaffoldAppProviders = useScaffoldAppProviders({
     targetNetwork: TARGET_NETWORK_INFO,
@@ -94,15 +104,19 @@ const Page: FC = ({}) => {
       setClient(client)
     }
 
-    void setupLit()
-  }, [])
+    if (!client) {
+      void setupLit()
+    }
+  }, [client])
 
-  // const decrypt = async (encryptedString: string, encryptedSymmetricKey: string) => {
   const decrypt = async () => {
     if (!client) {
       const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
       await client.connect()
     }
+
+    const { encryptedString, encryptedSymmetricKey } = data!
+    console.log('data', data)
 
     const msg = getSigningMsg(context.account!, context.chainId!)
     const sig = await context.signer?.signMessage(msg)
@@ -113,23 +127,26 @@ const Page: FC = ({}) => {
       address: context.account,
     }
 
-    console.log('authSig', authSig)
+    try {
+      const symmetricKey = await client.getEncryptionKey({
+        evmContractConditions,
+        toDecrypt: encryptedSymmetricKey,
+        chain,
+        authSig,
+      })
 
-    const symmetricKey = await client.getEncryptionKey({
-      evmContractConditions,
-      toDecrypt: encryptedSymmetricKey,
-      chain,
-      authSig,
-    })
+      const encryptedStringBlob = await (await fetch(encryptedString)).blob()
+      const decryptedString = await LitJsSdk.decryptString(encryptedStringBlob, symmetricKey)
 
-    const decryptedString = await LitJsSdk.decryptString(encryptedString, symmetricKey)
+      console.log('decryptedString', decryptedString)
 
-    console.log('decryptedString', decryptedString)
-
-    return { decryptedString }
+      return { decryptedString }
+    } catch (e) {
+      console.error('error', e)
+    }
   }
 
-  const encrypt = async (message: string) => {
+  const encrypt = async () => {
     if (!client) {
       const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
       await client.connect()
@@ -146,27 +163,40 @@ const Page: FC = ({}) => {
       address: context.account,
     }
 
-    console.log('authSig', authSig)
-    const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(message)
+    console.log('evmContractConditions', evmContractConditions)
 
-    const encryptedSymmetricKey = await client.saveEncryptionKey({
-      evmContractConditions,
-      symmetricKey,
-      authSig,
-      chain,
-      permanent: false,
-    })
+    const encryptedData = await Promise.all(
+      substationData.map(async (tierData, i) => {
+        const { encryptedString, symmetricKey } = await LitJsSdk.encryptString(JSON.stringify(tierData))
 
-    console.log('encryptedString', encryptedString)
-    console.log('encryptedSymmetricKey', encryptedSymmetricKey)
+        const encryptedSymmetricKey = await client.saveEncryptionKey({
+          evmContractConditions,
+          symmetricKey,
+          authSig,
+          chain,
+          permanent: false,
+        })
 
-    setEncryptedString(encryptedString)
-    setEncryptedSymmetricKey(LitJsSdk.uint8arrayToString(encryptedSymmetricKey, 'base16'))
+        const esB64 = (await blobToB64(encryptedString as Blob)) as string
+        console.log('esB64', esB64)
 
-    return {
-      encryptedString,
-      encryptedSymmetricKey: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, 'base16'),
-    }
+        return {
+          tier: i,
+          encryptedSymmetricKey: LitJsSdk.uint8arrayToString(encryptedSymmetricKey, 'base16'),
+          encryptedString: esB64,
+        }
+      })
+    )
+
+    console.log('encryptedData', encryptedData)
+
+    const a = document.createElement('a')
+    const file = new Blob([JSON.stringify(encryptedData)], { type: 'text/plain' })
+    a.href = URL.createObjectURL(file)
+    a.download = 'data.json'
+    a.click()
+
+    setData(encryptedData[0])
   }
 
   const connect = async () => {
@@ -218,7 +248,7 @@ const Page: FC = ({}) => {
         <div className="flex flex-col justify-center space-y-4">
           <button
             onClick={() => {
-              void encrypt('secret message')
+              void encrypt()
             }}>
             Encrypt
           </button>

@@ -6,11 +6,10 @@ import { Framework } from '@superfluid-finance/sdk-core'
 import { ethers } from 'ethers'
 import _ from 'lodash'
 import { Subscription_SuperApp } from '~common/generated/contract-types'
-import hardhatDeployedContractsJson from '~common/generated/hardhat_contracts.json'
+import { SSAJson } from '~~/helpers/constants'
 
 export const getServerSideProps: GetServerSideProps = async ({}) => {
   console.log('\n\n\ngetServerSideProps')
-  const SSAJson = hardhatDeployedContractsJson[5][0].contracts.Subscription_SuperApp as { address: string; abi: [] }
   const provider = new ethers.providers.AlchemyProvider('goerli', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
   const SSA = new ethers.Contract(SSAJson.address, SSAJson.abi, provider) as Subscription_SuperApp
 

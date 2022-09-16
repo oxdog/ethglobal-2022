@@ -30,11 +30,6 @@ export const SubscriptionsPage: React.FC<SubscriptionsPageProps> = ({}) => {
   useLoadUserOnWalletConnect()
   const { initiated, loading, subscriptions } = useAppSelector((state) => state.subs)
 
-  // -----------------------------
-  // Providers, signers & wallets
-  // -----------------------------
-  // 🛰 providers
-  // see useLoadProviders.ts for everything to do with loading the right providers
   const scaffoldAppProviders = useScaffoldAppProviders({
     targetNetwork: TARGET_NETWORK_INFO,
     connectToBurnerAutomatically: CONNECT_TO_BURNER_AUTOMATICALLY,
@@ -43,21 +38,13 @@ export const SubscriptionsPage: React.FC<SubscriptionsPageProps> = ({}) => {
     alchemyKey: ALCHEMY_KEY,
   })
 
-  // 🦊 Get your web3 ethers context from current providers
   const context = useEthersAppContext()
 
-  // -----------------------------
-  // Load Contracts
-  // -----------------------------
-  // 🛻 load contracts
   useLoadAppContracts()
-  // 🏭 connect to contracts for mainnet network & signer
   const [mainnetAdaptor] = useEthersAdaptorFromProviderOrSigners(MAINNET_PROVIDER)
   useConnectAppContracts(mainnetAdaptor)
-  // 🏭 connec to  contracts for current network & signer
   useConnectAppContracts(asEthersAdaptor(context))
 
-  // init contracts
   const Subscription_SuperApp = useAppContracts('SSA', context.chainId)
 
   return (
