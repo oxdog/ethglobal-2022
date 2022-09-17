@@ -1,15 +1,24 @@
 import { Framework } from '@superfluid-finance/sdk-core'
 import { useEthersAppContext } from 'eth-hooks/context'
 import { Signer } from 'ethers'
+import Cookies from 'js-cookie'
+import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 
+import { SSAJson } from '~~/helpers/constants'
+import { generateEvmContractConditions } from '~~/helpers/generateEvmContractConditions'
+import { getJWTResourceId } from '~~/helpers/getJWTResourceId'
+import { getSigningMsg } from '~~/helpers/getSigningMsg'
+import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
+import { useLitClient } from '~~/hooks/useLitClient'
+import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
+import { useAppDispatch } from '~~/redux/hooks'
+import { pauseSub, TSubscription } from '~~/redux/slices/subs'
+
+import { EmojiBubble } from '../EmojiBubble'
 import FlowingBalance from '../FlowingBalance'
 import ProgressBar from '../Progressbar'
 import { ShortAddress } from '../ShortAddress'
-
-import { pauseSub, TSubscription } from '~~/redux/slices/subs'
-import { useAppDispatch } from '~~/redux/hooks'
-import { EmojiBubble } from '../EmojiBubble'
 
 interface SubscriptionProps {
   subscriptions: TSubscription
@@ -17,8 +26,16 @@ interface SubscriptionProps {
 
 export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }) => {
   const [txMessage, setTxMessage] = useState<string>('')
+  const [unlocking, setUnlocking] = useState<boolean>(false)
+
+  useLoadUserOnWalletConnect()
+  useClearCookiesOnDisconnect()
+
+  const client = useLitClient()
+
   const context = useEthersAppContext()
   const dispatch = useAppDispatch()
+  const router = useRouter()
 
   const pauseFlow = async () => {
     setTxMessage('⏳🥪 Confirm...')
@@ -74,6 +91,42 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
     }
   }
 
+  const unlockSubstation = async () => {
+    const resourceId = getJWTResourceId(sub.address)
+
+    console.log(sub.address, 'sub.address')
+    console.log(SSAJson.address, 'SSAJson.address')
+
+    if (!client) {
+      console.log('no client')
+      return
+    }
+    try {
+      setUnlocking(true)
+      const msg = getSigningMsg(context.account!, context.chainId!)
+      const sig = await context.signer?.signMessage(msg)
+      const authSig = {
+        sig: sig,
+        derivedVia: 'web3.eth.personal.sign',
+        signedMessage: msg,
+        address: context.account,
+      }
+
+      const jwt = (await client.getSignedToken({
+        evmContractConditions: generateEvmContractConditions(sub.address, 'goerli', 0),
+        chain: 'goerli',
+        authSig,
+        resourceId: resourceId,
+      })) as string
+      setUnlocking(false)
+      Cookies.set('lit-auth', jwt, { expires: 1 })
+      await router.push(`/substation?sub=${sub.address}`)
+    } catch (err: any) {
+      setUnlocking(false)
+      console.log('error: ', err.message)
+    }
+  }
+
   return (
     <div className="group relative flex flex-col items-center justify-center bg-gray-50 py-8 px-4 rounded-xl shadow-md overflow-hidden">
       <div className="flex flex-row w-full justify-around items-start">
@@ -101,13 +154,12 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
           </button>
         )}
 
-        <a
-          href={`/substation?sub=${sub.address}`}
-          target="_blank"
-          className="hover:text-gray-400 tracking-wider cursor-pointer"
-          rel="noreferrer">
-          Go to Substation
-        </a>
+        <button
+          onClick={() => unlockSubstation()}
+          disabled={unlocking}
+          className="hover:text-gray-400 tracking-wider cursor-pointer">
+          {unlocking ? 'Confirm signature...' : 'Go to Substation'}
+        </button>
 
         <div className="flex flex-col items-end">
           <div className="">DAI Until next Tier</div>

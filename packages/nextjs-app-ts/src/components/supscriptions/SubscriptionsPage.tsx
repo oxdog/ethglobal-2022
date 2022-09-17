@@ -22,12 +22,16 @@ import {
 } from '~~/config/app.config'
 import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
 import { useAppSelector } from '~~/redux/hooks'
+import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
 
 interface SubscriptionsPageProps {}
 
 export const SubscriptionsPage: React.FC<SubscriptionsPageProps> = ({}) => {
   const notificationHolder = useCreateAntNotificationHolder()
+
   useLoadUserOnWalletConnect()
+  useClearCookiesOnDisconnect()
+
   const { initiated, loading, subscriptions } = useAppSelector((state) => state.subs)
 
   const scaffoldAppProviders = useScaffoldAppProviders({

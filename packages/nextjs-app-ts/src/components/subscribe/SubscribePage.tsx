@@ -8,8 +8,6 @@ import { Signer } from 'ethers'
 import Head from 'next/head'
 import { FC, ReactElement, useState } from 'react'
 
-import { Header } from '../Header'
-
 import { useAppContracts, useConnectAppContracts, useLoadAppContracts } from '~common/components/context'
 import { useCreateAntNotificationHolder } from '~common/components/hooks/useAntNotification'
 import { useScaffoldAppProviders } from '~common/components/hooks/useScaffoldAppProviders'
@@ -20,8 +18,12 @@ import {
   MAINNET_PROVIDER,
   TARGET_NETWORK_INFO,
 } from '~~/config/app.config'
+import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
+import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
 import { useScaffoldHooksExamples } from '~~/hooks/useScaffoldHooksExamples'
+
 import { EmojiBubble } from '../EmojiBubble'
+import { Header } from '../Header'
 import { ShortAddress } from '../ShortAddress'
 
 interface iSubscriptionPageProps {
@@ -32,6 +34,9 @@ interface iSubscriptionPageProps {
 
 export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
   const notificationHolder = useCreateAntNotificationHolder()
+
+  useLoadUserOnWalletConnect()
+  useClearCookiesOnDisconnect()
 
   const [txMessage, setTxMessage] = useState<string>('')
 

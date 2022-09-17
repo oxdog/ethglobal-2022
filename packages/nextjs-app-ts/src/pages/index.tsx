@@ -1,9 +1,9 @@
 import { FC } from 'react'
-
-import { MainPage } from '~~/components/main/MainPage'
+import { Layout } from '~~/components/Layout'
 
 const Page: FC = () => {
-  return <MainPage pageName="main"></MainPage>
+  // return <MainPage pageName="main"></MainPage>
+  return <Layout />
 }
 
 export default Page

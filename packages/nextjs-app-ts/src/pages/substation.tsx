@@ -1,9 +1,9 @@
 import { FC, useEffect, useState } from 'react'
 // @ts-expect-error
 import LitJsSdk from '@lit-protocol/sdk-browser'
+import Cookies from 'cookies'
 import { useEthersAppContext } from 'eth-hooks/context'
 import { ethers } from 'ethers'
-import _ from 'lodash'
 import { GetServerSideProps } from 'next'
 import { useScaffoldAppProviders } from '~common/components'
 import { Subscription_SuperApp } from '~common/generated/contract-types'
@@ -17,10 +17,37 @@ import {
 } from '~~/config/app.config'
 import { SSAJson } from '~~/helpers/constants'
 import { generateEvmContractConditions } from '~~/helpers/generateEvmContractConditions'
+import { getSigningMsg } from '~~/helpers/getSigningMsg'
+import { useLitClient } from '~~/hooks/useLitClient'
+import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
+import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
   const sub = query.sub as string
-  let tierData = []
+  const cookies = new Cookies(req, res)
+  const jwt = cookies.get('lit-auth')
+
+  let tierData: any[] = []
+
+  if (!jwt) {
+    return {
+      props: {
+        authorized: false,
+        tierData,
+      },
+    }
+  }
+
+  const { verified, payload } = LitJsSdk.verifyJwt({ jwt })
+
+  if (payload.baseUrl !== 'supersub_replace' || payload.path !== '/substation' || payload.extraData !== sub) {
+    return {
+      props: {
+        authorized: false,
+        tierData,
+      },
+    }
+  }
 
   try {
     if (sub && ethers.utils.isAddress(sub)) {
@@ -42,19 +69,11 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
 
   return {
     props: {
+      authorized: verified ? true : false,
       tierData,
     },
   }
 }
-
-const getSigningMsg = (account: string, chainId: number) =>
-  `Supersub wants you to sign in with your Ethereum account:\n${account}\n\nURI: ${
-    window.location.href
-  }\nChain ID: ${chainId}\nNonce: ${_.random(
-    176545765434512,
-    999999999999999,
-    false
-  )}\nIssued At: ${new Date().getDate()}`
 
 type EncryptedData = {
   tier: number
@@ -63,13 +82,17 @@ type EncryptedData = {
 }
 
 interface SubstationPageProps {
+  authorized: boolean
   tierData: EncryptedData[]
 }
 
 type Post = { text: string }
 
-const Page: FC<SubstationPageProps> = ({ tierData }) => {
-  const [client, setClient] = useState<any>(undefined)
+const Page: FC<SubstationPageProps> = ({ tierData, authorized }) => {
+  const client = useLitClient()
+
+  useLoadUserOnWalletConnect()
+  useClearCookiesOnDisconnect()
 
   const chain = 'goerli'
   const evmContractConditions = generateEvmContractConditions(SSAJson.address, chain, 0)
@@ -87,21 +110,13 @@ const Page: FC<SubstationPageProps> = ({ tierData }) => {
   })
 
   useEffect(() => {
-    const setupLit = async () => {
-      const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
-      await client.connect()
-      setClient(client)
-    }
-
-    if (!client) {
-      void setupLit()
-    }
-  }, [client])
+    console.log('tierData', tierData)
+  }, [tierData])
 
   const decrypt = async (tierId: number) => {
     if (!client) {
-      const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
-      await client.connect()
+      console.log('no client')
+      return
     }
 
     const msg = getSigningMsg(context.account!, context.chainId!)
@@ -149,31 +164,32 @@ const Page: FC<SubstationPageProps> = ({ tierData }) => {
       const posts = decryptedPosts[tierId]
       const isSelected = selectedTier === data.tier
 
-      // console.log('posts', posts)
-      return (
-        <div key={tierId} className="flex flex-col" hidden={!isSelected}>
-          {posts ? (
-            <div className="flex flex-col space-y-8">
-              {posts.map((post, i) => (
-                <div key={`${tierId}post${i}`} className="flex flex-col space-y-2">
-                  <div className="text-lg font-semibold">Post {i}</div>
-                  <div className="">{post.text}</div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="flex space-x-4" hidden={!isSelected}>
-              <div>{`${tierId} not decrypted`}</div>
-              <button
-                onClick={() => {
-                  void decrypt(data.tier)
-                }}>
-                Decrypt
-              </button>
-            </div>
-          )}
-        </div>
-      )
+      if (isSelected) {
+        return (
+          <div key={tierId} className="flex flex-col">
+            {posts ? (
+              <div className="flex flex-col space-y-8">
+                {posts.map((post, i) => (
+                  <div key={`${tierId}post${i}`} className="flex flex-col space-y-2">
+                    <div className="text-lg font-semibold">Post {i}</div>
+                    <div className="">{post.text}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex space-x-4">
+                <div>{`${tierId} not decrypted`}</div>
+                <button
+                  onClick={() => {
+                    void decrypt(data.tier)
+                  }}>
+                  Decrypt
+                </button>
+              </div>
+            )}
+          </div>
+        )
+      }
     })
 
   return (
@@ -192,8 +208,18 @@ const Page: FC<SubstationPageProps> = ({ tierData }) => {
             </button>
           ))}
         </div>
-
-        {tierData.length === 0 ? <div>Substation not found</div> : renderTierData()}
+        {!authorized ? (
+          <div className="flex flex-col items-center space-x-4">
+            <div>Not authorized to access substation</div>
+            <a href={`/user/subscriptions`} className="hover:text-gray-400 tracking-wider cursor-pointer">
+              Back to subscription
+            </a>
+          </div>
+        ) : tierData.length === 0 ? (
+          <div>Substation not found</div>
+        ) : (
+          renderTierData()
+        )}
       </div>
     </>
   )

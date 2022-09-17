@@ -21,14 +21,17 @@ import {
 import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
 import { TSubstation } from '~~/pages/user/substations'
 import { Substation } from './Substation'
+import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
 
 interface SubstationsPageProps {
   substations: TSubstation[]
 }
 
 export const SubstationPage: React.FC<SubstationsPageProps> = ({ substations }) => {
-  useLoadUserOnWalletConnect()
   const [initiate, setInitiate] = useState<boolean>(false)
+
+  useLoadUserOnWalletConnect()
+  useClearCookiesOnDisconnect()
 
   useEffect(() => console.log('substations', substations), [substations])
 

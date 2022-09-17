@@ -1,9 +1,8 @@
-import { FC, useEffect, useState } from 'react'
+import { FC, useState } from 'react'
 import Cookies from 'js-cookie'
 // @ts-expect-error
 import LitJsSdk from '@lit-protocol/sdk-browser'
 import { useEthersAppContext } from 'eth-hooks/context'
-import _ from 'lodash'
 import { useScaffoldAppProviders } from '~common/components'
 import { Header } from '~~/components/Header'
 import {
@@ -15,21 +14,18 @@ import {
 } from '~~/config/app.config'
 import { generateEvmContractConditions } from '~~/helpers/generateEvmContractConditions'
 import { SSAJson } from '~~/helpers/constants'
-
-const getSigningMsg = (account: string, chainId: number) =>
-  `Supersub wants you to sign in with your Ethereum account:\n${account}\n\nURI: ${
-    window.location.href
-  }\nChain ID: ${chainId}\nNonce: ${_.random(
-    176545765434512,
-    999999999999999,
-    false
-  )}\nIssued At: ${new Date().getDate()}`
+import { getSigningMsg } from '~~/helpers/getSigningMsg'
+import { getJWTResourceId } from '~~/helpers/getJWTResourceId'
+import { useLitClient } from '~~/hooks/useLitClient'
+import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
+import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
 
 type EncryptedData = {
   encryptedString: string
   encryptedSymmetricKey: string
 }
 
+// Demo tierdata
 const tier1_data = {
   posts: [
     {
@@ -83,7 +79,10 @@ const blobToB64 = (blob: Blob) =>
 
 const Page: FC = ({}) => {
   const [data, setData] = useState<EncryptedData>()
-  const [client, setClient] = useState<any>(undefined)
+  const client = useLitClient()
+
+  useLoadUserOnWalletConnect()
+  useClearCookiesOnDisconnect()
 
   const chain = 'goerli'
   const evmContractConditions = generateEvmContractConditions(SSAJson.address, chain, 0)
@@ -97,22 +96,10 @@ const Page: FC = ({}) => {
     alchemyKey: ALCHEMY_KEY,
   })
 
-  useEffect(() => {
-    const setupLit = async () => {
-      const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
-      await client.connect()
-      setClient(client)
-    }
-
-    if (!client) {
-      void setupLit()
-    }
-  }, [client])
-
   const decrypt = async () => {
     if (!client) {
-      const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
-      await client.connect()
+      console.log('no client')
+      return
     }
 
     const { encryptedString, encryptedSymmetricKey } = data!
@@ -148,8 +135,8 @@ const Page: FC = ({}) => {
 
   const encrypt = async () => {
     if (!client) {
-      const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
-      await client.connect()
+      console.log('no client')
+      return
     }
 
     // const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain })
@@ -200,19 +187,12 @@ const Page: FC = ({}) => {
   }
 
   const connect = async () => {
-    const resourceId = {
-      baseUrl: 'http://localhost:3000',
-      path: '/protected',
-      orgId: '',
-      role: '',
-      extraData: 'utjzfhte5465u7tzrter5467r5tuzfrhter5e46r5t',
-    }
+    const resourceId = getJWTResourceId(SSAJson.address)
 
     if (!client) {
-      const client = new LitJsSdk.LitNodeClient({ alertWhenUnauthorized: false })
-      await client.connect()
+      console.log('no client')
+      return
     }
-
     // const authSig = await LitJsSdk.checkAndSignAuthMessage({ chain })
 
     const msg = getSigningMsg(context.account!, context.chainId!)
@@ -225,16 +205,45 @@ const Page: FC = ({}) => {
     }
 
     try {
-      await client.saveSigningCondition({ evmContractConditions, chain, authSig, resourceId })
-
       const jwt = (await client.getSignedToken({
         evmContractConditions,
         chain,
         authSig,
-        resourceId: resourceId,
+        resourceId,
       })) as string
       Cookies.set('lit-auth', jwt, { expires: 1 })
       console.log('\n\n\nset cookie')
+    } catch (err: any) {
+      console.log('error: ', err.message)
+    }
+  }
+
+  const setSigningCondition = async () => {
+    const resourceId = getJWTResourceId(SSAJson.address)
+
+    if (!client) {
+      console.log('no client')
+      return
+    }
+
+    try {
+      const msg = getSigningMsg(context.account!, context.chainId!)
+      const sig = await context.signer?.signMessage(msg)
+      const authSig = {
+        sig: sig,
+        derivedVia: 'web3.eth.personal.sign',
+        signedMessage: msg,
+        address: context.account,
+      }
+
+      await client.saveSigningCondition({
+        evmContractConditions,
+        chain,
+        authSig,
+        resourceId,
+      })
+
+      console.log('Set Condition')
     } catch (err: any) {
       console.log('error: ', err.message)
     }
@@ -263,6 +272,12 @@ const Page: FC = ({}) => {
               void connect()
             }}>
             Request Access
+          </button>
+          <button
+            onClick={() => {
+              void setSigningCondition()
+            }}>
+            Set JWT Signing Condition
           </button>
         </div>
       </div>

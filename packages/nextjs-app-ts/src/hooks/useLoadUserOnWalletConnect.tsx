@@ -15,8 +15,6 @@ export const useLoadUserOnWalletConnect = () => {
 
   useEffect(() => {
     const setup = async () => {
-      setCooldown(true)
-
       if (!loading && !initiated && context.signer) {
         console.log('New signer')
         setLoading(true)
@@ -33,6 +31,7 @@ export const useLoadUserOnWalletConnect = () => {
     }
 
     if (!coolDown) {
+      setCooldown(true)
       void setup()
       _.delay(() => setCooldown(false), 2000)
     }

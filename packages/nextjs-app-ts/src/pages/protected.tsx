@@ -9,6 +9,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
   const { id } = query
   const cookies = new Cookies(req, res)
   const jwt = cookies.get('lit-auth')
+
   if (!jwt) {
     return {
       props: {
@@ -26,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
       },
     }
   }
+
   return {
     props: {
       authorized: verified ? true : false,
