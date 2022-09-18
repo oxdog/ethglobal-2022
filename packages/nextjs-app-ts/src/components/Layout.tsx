@@ -38,9 +38,10 @@ function classNames(...classes: any[]) {
 interface LayoutProps {
   title: string
   subtitle?: string
+  children?: React.ReactNode
 }
 
-export const Layout: React.FC<LayoutProps> = ({ title, subtitle }) => {
+export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const router = useRouter()
 
@@ -264,17 +265,12 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle }) => {
 
           <main className="flex-1">
             <div className="py-6">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 space-y-2">
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 space-y-2 pb-4">
                 <div className="text-2xl font-semibold text-gray-900">{title}</div>
                 <div className="font-semibold text-gray-400">{subtitle}</div>
               </div>
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
-                {/* Replace with your content */}
-                <div className="py-4">
-                  <div className="h-96 rounded-lg border-4 border-dashed border-gray-200" />
-                </div>
-                {/* /End replace */}
-              </div>
+
+              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">{children}</div>
             </div>
           </main>
         </div>

@@ -1,17 +1,19 @@
+import { SignalIcon } from '@heroicons/react/24/outline'
 import { Framework } from '@superfluid-finance/sdk-core'
 import { useEthersAppContext } from 'eth-hooks/context'
 import { Signer } from 'ethers'
 import Cookies from 'js-cookie'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
+import { AiOutlineLoading } from 'react-icons/ai'
+import { BsArrowRepeat } from 'react-icons/bs'
 
 import { SSAJson } from '~~/helpers/constants'
 import { generateEvmContractConditions } from '~~/helpers/generateEvmContractConditions'
 import { getJWTResourceId } from '~~/helpers/getJWTResourceId'
 import { getSigningMsg } from '~~/helpers/getSigningMsg'
-import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
 import { useLitClient } from '~~/hooks/useLitClient'
-import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
 import { useAppDispatch } from '~~/redux/hooks'
 import { pauseSub, TSubscription } from '~~/redux/slices/subs'
 
@@ -27,9 +29,6 @@ interface SubscriptionProps {
 export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }) => {
   const [txMessage, setTxMessage] = useState<string>('')
   const [unlocking, setUnlocking] = useState<boolean>(false)
-
-  useLoadUserOnWalletConnect()
-  useClearCookiesOnDisconnect()
 
   const client = useLitClient()
 
@@ -127,8 +126,85 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
     }
   }
 
+  const drawActiveSubElements = () => (
+    <>
+      <button
+        onClick={() => unlockSubstation()}
+        disabled={unlocking}
+        className="inline-flex items-center cursor-pointer my-24 px-6 py-3 border transition-colors border-transparent text-base font-medium rounded-full shadow-sm text-gry-800 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+        {unlocking ? (
+          <>
+            <AiOutlineLoading className="w-8 h-8 mr-2 animate-spin" /> <div>Unlocking...</div>
+          </>
+        ) : (
+          <>
+            <SignalIcon className="w-8 h-8 mr-2" /> <div>Go to Substation</div>
+          </>
+        )}
+      </button>
+
+      <div className="flex flex-col items-start space-y-2 ml-8 cursor-default select-none">
+        <div className="font-semibold tracking-widest">DAI Until next Tier</div>
+        <div className="relative text-2xl w-72 text-left tracking-widest font-semibold text-green-400">
+          <FlowingBalance
+            // balance={sub.toNextTier}
+            balance="1456544235436475445653333"
+            balanceTimestamp={Number(sub.balanceTimestamp)}
+            flowRate={sub.flowRate}
+            reverse={true}
+          />
+          <div className="absolute inset-y-0 w-12 right-0 bg-gradient-to-r from-transparent via-gray-50 to-gray-50" />
+        </div>
+      </div>
+    </>
+  )
+
+  const drawInactiveSubElements = () => (
+    <div className="flex flex-col items-center my-24 space-y-8">
+      <div className="uppercase text-3xl font-bold tracking-widest text-gray-400">inactive</div>
+      <Link href={`/subscribe/${sub.address}?reactivate=true`}>
+        <a className="inline-flex items-center cursor-pointer px-6 py-3 border transition-colors border-transparent text-base font-medium rounded-full shadow-sm text-gray-800 hover:text-green-400 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+          <BsArrowRepeat className="w-8 h-8 mr-2" />
+          <div className="flex items-center"> Re-Activate </div>
+        </a>
+      </Link>
+    </div>
+  )
+
   return (
-    <div className="group relative flex flex-col items-center justify-center bg-gray-50 py-8 px-4 rounded-xl shadow-md overflow-hidden">
+    <div className="group relative w-72 h-full flex flex-col items-center justify-start bg-gray-50 pt-16 pb-8 px-4 rounded-xl shadow-md overflow-hidden">
+      <div className="absolute -top-4 text-9xl transform scale-[3] -rotate-12 opacity-10 pointer-events-none">🥪</div>
+      <a
+        href={`https://goerli.etherscan.io/address/${sub.address}`}
+        target="_blank"
+        className="absolute top-2 left-4 text-gray-600 hover:text-gray-800 tracking-wider cursor-pointer"
+        rel="noreferrer">
+        <ShortAddress address={sub.address} />
+      </a>
+
+      <div className="flex flex-col items-center space-y-4 cursor- select-none z-10">
+        <div className="pt-4 w-min text-3xl uppercase tracking-widest font-bold">Tier</div>
+        <div className="text-5xl uppercase font-bold bg-white rounded-full h-24 w-24 flex items-center justify-center pb-1 shadow-md shadow-green-400">
+          {sub.tier === sub.availableTiers.length - 1 ? <div className="text-green-400">Max</div> : sub.tier}
+        </div>
+      </div>
+
+      {sub.active ? drawActiveSubElements() : drawInactiveSubElements()}
+
+      <div className="absolute bottom-0 w-full">
+        <ProgressBar
+          fromBalance={sub.tier < sub.availableTiers.length ? sub.availableTiers[sub.tier] : sub.availableTiers[-1]}
+          toNextTier={sub.toNextTier}
+          balance={sub.passBalance}
+          balanceTimestamp={Number(sub.balanceTimestamp)}
+          flowRate={sub.flowRate}
+        />
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="group relative h-96 flex flex-col items-center justify-center bg-gray-50 py-8 px-4 rounded-xl shadow-md overflow-hidden">
       <div className="flex flex-row w-full justify-around items-start">
         <div className="flex flex-col items-center">
           <EmojiBubble emoji="🥪" />

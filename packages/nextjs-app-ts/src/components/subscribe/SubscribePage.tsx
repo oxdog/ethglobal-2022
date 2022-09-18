@@ -6,6 +6,7 @@ import { useEthersAppContext } from 'eth-hooks/context'
 import { asEthersAdaptor } from 'eth-hooks/functions'
 import { Signer } from 'ethers'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { FC, ReactElement, useState } from 'react'
 
 import { useAppContracts, useConnectAppContracts, useLoadAppContracts } from '~common/components/context'
@@ -34,6 +35,8 @@ interface iSubscriptionPageProps {
 
 export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
   const notificationHolder = useCreateAntNotificationHolder()
+
+  const router = useRouter()
 
   useLoadUserOnWalletConnect()
   useClearCookiesOnDisconnect()
@@ -99,7 +102,11 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
       if (recipe?.status === 0) {
         setTxMessage('❌🥪 Transaction failed!')
       } else {
-        setTxMessage('✅🥪 Supersub created!')
+        if (Object.keys(router.query).includes('reactivate')) {
+          setTxMessage('✅🥪 Supersub re-activated!')
+        } else {
+          setTxMessage('✅🥪 Supersub created!')
+        }
       }
     } catch (error: any) {
       console.log(
@@ -140,6 +147,10 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
             className="no-underline group-hover:text-gray-400 tracking-wider cursor-pointer">
             <ShortAddress address={contract} />
           </a>
+
+          {Object.keys(router.query).includes('reactivate') && (
+            <div>Subscribe and your the inactive Supersub will automatically be re-activtated</div>
+          )}
 
           {txMessage !== '' ? (
             <p className="text-2xl">{txMessage}</p>

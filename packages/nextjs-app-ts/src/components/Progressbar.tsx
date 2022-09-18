@@ -79,7 +79,7 @@ const ProgressBar: FC<ProgressBarProps> = ({
     //     textOverflow: 'ellipsis',
     //   }}>
     <div className="flex bg-gray-200 h-4 w-full">
-      <div className="bg-cyan-400 z-10" style={{ width: `${progress}%` }} />
+      <div className={flowRate === '0' ? 'bg-gray-300 z-10' : 'bg-green-400 z-10'} style={{ width: `${progress}%` }} />
       {/* <div className="absolute bottom-0 bg-gray-200 w-full h-4" /> */}
     </div>
     // </Box>
