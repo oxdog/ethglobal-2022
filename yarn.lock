@@ -1728,6 +1728,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@headlessui/react@npm:1.6.6":
+  version: 1.6.6
+  resolution: "@headlessui/react@npm:1.6.6"
+  peerDependencies:
+    react: ^16 || ^17 || ^18
+    react-dom: ^16 || ^17 || ^18
+  checksum: 6ebb34bde0bd2a5045ae29a2bac1dc166f7163c9ad98aabe5abb580c3c770d0b3040d5992045f9e68b6c8e8eca5bf7eca71276ff9b1696a9fb88a9380d8fcf96
+  languageName: node
+  linkType: hard
+
+"@heroicons/react@npm:^2.0.11":
+  version: 2.0.11
+  resolution: "@heroicons/react@npm:2.0.11"
+  peerDependencies:
+    react: ">= 16"
+  checksum: 9049e12bdb9bb1cc2ebc555877f538055ae01828bda781f0a7f3b2fe17aff8b6337d8562c5984bfe09ee77e95befd4e62854a58c9900c2e2650798b15ab807c3
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.5.0":
   version: 0.5.0
   resolution: "@humanwhocodes/config-array@npm:0.5.0"
@@ -2903,6 +2922,8 @@ __metadata:
     "@ethersproject/signing-key": ^5.6.2
     "@ethersproject/solidity": ^5.6.1
     "@ethersproject/units": ^5.6.1
+    "@headlessui/react": 1.6.6
+    "@heroicons/react": ^2.0.11
     "@lit-protocol/sdk-browser": ^1.1.218
     "@maticnetwork/maticjs": ^3.4.0-beta.0
     "@next/eslint-plugin-next": ^12.2.3
@@ -2998,7 +3019,7 @@ __metadata:
     timers-browserify: ^2.0.12
     ts-invariant: ^0.10.3
     tweetnacl-util: ^0.15.1
-    typescript: ^4.7.4
+    typescript: 4.8.3
     use-debounce: ^8.0.3
     usehooks-ts: ^2.6.0
     util: ^0.12.4
@@ -25515,6 +25536,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:4.8.3":
+  version: 4.8.3
+  resolution: "typescript@npm:4.8.3"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 8286a5edcaf3d68e65c451aa1e7150ad1cf53ee0813c07ec35b7abdfdb10f355ecaa13c6a226a694ae7a67785fd7eeebf89f845da0b4f7e4a35561ddc459aba0
+  languageName: node
+  linkType: hard
+
 "typescript@npm:^4.5.4, typescript@npm:^4.7.4":
   version: 4.7.4
   resolution: "typescript@npm:4.7.4"
@@ -25522,6 +25553,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 5750181b1cd7e6482c4195825547e70f944114fb47e58e4aa7553e62f11b3f3173766aef9c281783edfd881f7b8299cf35e3ca8caebe73d8464528c907a164df
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@4.8.3#~builtin<compat/typescript>":
+  version: 4.8.3
+  resolution: "typescript@patch:typescript@npm%3A4.8.3#~builtin<compat/typescript>::version=4.8.3&hash=7ad353"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 0404a09c625df01934ef774b45ce1ca57ccae41cd625fcdbb82056715320d9329e70d9d75c2c732ec6ef947444ca978c189a332b71fa21f5c1437d5a83e24906
   languageName: node
   linkType: hard
 

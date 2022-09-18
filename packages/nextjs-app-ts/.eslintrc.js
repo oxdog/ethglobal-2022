@@ -44,5 +44,6 @@ module.exports = {
     '@typescript-eslint/require-await': 'off',
     '@typescript-eslint/restrict-plus-operands': 'off',
     '@typescript-eslint/restrict-template-expressions': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
   },
 }
