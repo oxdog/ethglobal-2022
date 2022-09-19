@@ -1,17 +1,11 @@
 import { BigNumber, BigNumberish } from 'ethers'
 import { FC, ReactElement, useEffect, useMemo, useState } from 'react'
-
 import EtherFormatted from './EtherFormatted'
-
-// import _ from 'lodash'
 
 const ANIMATION_MINIMUM_STEP_TIME = 80
 
 export interface FlowingBalanceProps {
   balance: string
-  /**
-   * Timestamp in Subgraph's UTC.
-   */
   balanceTimestamp: number
   flowRate: string
   reverse?: boolean
@@ -80,16 +74,9 @@ const FlowingBalance: FC<FlowingBalanceProps> = ({
   }, [balance, balanceTimestamp, flowRate])
 
   return (
-    // <Box
-    //   data-cy={'total-streamed'}
-    //   component="span"
-    //   sx={{
-    //     textOverflow: 'ellipsis',
-    //   }}>
     <>
       <EtherFormatted wei={weiValue} />
     </>
-    // </Box>
   )
 }
 
