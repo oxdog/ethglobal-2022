@@ -6,9 +6,5 @@ interface ClipStringProps {
 }
 
 export const ClipString: React.FC<ClipStringProps> = ({ maxLength, text }) => {
-  return (
-    <>
-      {text.substring(0, maxLength)} {text.length > maxLength && '...'}
-    </>
-  )
+  return <>{text.substring(0, maxLength).concat(text.length > maxLength ? '...' : '')}</>
 }

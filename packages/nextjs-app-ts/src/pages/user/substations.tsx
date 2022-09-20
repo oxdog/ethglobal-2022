@@ -1,6 +1,6 @@
 import { GetServerSideProps } from 'next'
 import { FC } from 'react'
-import SubstationPage from '~~/components/substation/SubstationPage'
+import SubstationInsightPage from '~~/components/substationInsights/SubstationInsightPage'
 
 import { Framework } from '@superfluid-finance/sdk-core'
 import { ethers } from 'ethers'
@@ -61,12 +61,12 @@ export type TSubstation = {
   flowRate: string
 }
 
-interface SubstationPageProps {
+interface SubstationInsightPageProps {
   substations: TSubstation[]
 }
 
-const Page: FC<SubstationPageProps> = ({ substations }) => {
-  return <SubstationPage substations={substations} />
+const Page: FC<SubstationInsightPageProps> = ({ substations }) => {
+  return <SubstationInsightPage substations={substations} />
 }
 
 export default Page

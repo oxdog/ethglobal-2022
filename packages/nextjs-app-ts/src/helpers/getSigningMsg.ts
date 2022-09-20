@@ -1,8 +1,7 @@
+import _ from 'lodash'
+
 export const getSigningMsg = (account: string, chainId: number) =>
-  `Supersub wants you to sign in with your Ethereum account:\n${account}\n\nURI: ${
+  `Supersub DEMO asks you to sign with your Ethereum account:\n${account}\n\nURI: ${
     window.location.href
-  }\nChain ID: ${chainId}\nNonce: ${_.random(
-    176545765434512,
-    999999999999999,
-    false
-  )}\nIssued At: ${new Date().getDate()}`
+  } to unlock the resources
+    \nChain ID: ${chainId}\nNonce: ${_.random(176545765434512, 999999999999999, false)}\nIssued At: ${new Date()}`

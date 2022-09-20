@@ -29,13 +29,38 @@ type EncryptedData = {
 const tier1_data = {
   posts: [
     {
-      text: 'This is post 1 tier 1',
+      type: 'file',
+      heading: 'Files? Yes secret files',
+      content:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus eligendi explicabo repellat, sed nisi corporis excepturi adipisci at officia quae.',
+      date: 'Mon Sep 21 2022',
     },
     {
-      text: 'This is post 2 tier 1',
+      type: 'video',
+      heading: 'What a secret video?',
+      content:
+        'Lorem ipsum dolor sit amet consectetur  Quasi aut corporis mollitia sequi provident minima quisquam pariatur  adipisicing elit. Repellendus eligendi explicabo repellat, sed nisi corporis excepturi adipisci at officia quae.',
+      date: 'Mon Sep 20 2022',
     },
     {
-      text: 'This is post 3 tier 1',
+      type: 'text',
+      heading: 'Post Heading 1',
+      content:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus eligendi explicabo repellat, sed nisi corporis excepturi adipisci at officia quae.',
+      date: 'Mon Sep 20 2022',
+    },
+    {
+      type: 'gallery',
+      heading: 'YES! Images.',
+      content: 'Lorem Quasi aut corporis mollitia sequi provident minima quisquam pariatur at officia quae.',
+      date: 'Mon Sep 14 2022',
+    },
+    {
+      type: 'text',
+      heading: 'Post Heading 2',
+      content:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Enim, sequi explicabo. Quasi aut corporis mollitia sequi provident minima quisquam pariatur nulla quidem modi, omnis sapiente laborum repudiandae fugiat nemo nam?',
+      date: 'Mon Sep 13 2022',
     },
   ],
 }

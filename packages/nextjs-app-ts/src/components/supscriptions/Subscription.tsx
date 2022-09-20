@@ -17,12 +17,9 @@ import { useLitClient } from '~~/hooks/useLitClient'
 import { useAppDispatch } from '~~/redux/hooks'
 import { pauseSub, TSubscription } from '~~/redux/slices/subs'
 import { ClipString } from '../ClipString'
-import { EmojiBubble } from '../EmojiBubble'
 import FlowingBalance from '../FlowingBalance'
 import ProgressBar from '../Progressbar'
 import { ShortAddress } from '../ShortAddress'
-
-const solutions = [{ name: 'Blog', description: 'Learn about tips, product updates and company culture.', href: '#' }]
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(' ')
@@ -137,14 +134,15 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
       <button
         onClick={() => unlockSubstation()}
         disabled={unlocking}
-        className="inline-flex items-center cursor-pointer my-24 px-6 py-3 border transition-colors border-transparent text-base font-medium rounded-full shadow-sm text-gry-800 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+        className="inline-flex items-center cursor-pointer shadow shadow-green-400 my-24 px-6 py-3 border transition-colors border-transparent text-base font-medium rounded-full text-gry-800 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
         {unlocking ? (
           <>
             <AiOutlineLoading className="w-8 h-8 mr-2 animate-spin" /> <div>Unlocking...</div>
           </>
         ) : (
           <>
-            <SignalIcon className="w-8 h-8 mr-2" /> <div>Go to Substation</div>
+            <SignalIcon className="w-8 h-8 mr-2" />{' '}
+            <div className="uppercase tracking-widest select-none">Open Substation</div>
           </>
         )}
       </button>
@@ -250,71 +248,6 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
       </div>
 
       {sub.active ? drawActiveSubElements() : drawInactiveSubElements()}
-
-      <div className="absolute bottom-0 w-full">
-        <ProgressBar
-          fromBalance={sub.tier < sub.availableTiers.length ? sub.availableTiers[sub.tier] : sub.availableTiers[-1]}
-          toNextTier={sub.toNextTier}
-          balance={sub.passBalance}
-          balanceTimestamp={Number(sub.balanceTimestamp)}
-          flowRate={sub.flowRate}
-        />
-      </div>
-    </div>
-  )
-
-  return (
-    <div className="group relative h-96 flex flex-col items-center justify-center bg-gray-50 py-8 px-4 rounded-xl shadow-md overflow-hidden">
-      <div className="flex flex-row w-full justify-around items-start">
-        <div className="flex flex-col items-center">
-          <EmojiBubble emoji="🥪" />
-          <div className="pt-4 w-min text-3xl">{sub.name}</div>
-          <div className="flex flex-col items-center justify-center space-y-8"></div>
-        </div>
-
-        <div className="flex flex-col items-center pt-8">
-          <div className="text-2xl font-bold">Tier</div>
-          <div className="text-4xl font-bold">{sub.tier}</div>
-        </div>
-      </div>
-
-      <div className="w-full flex items-end justify-between">
-        {!sub.active ? (
-          <div className="font-bold uppercase text-gray-300"> inactive </div>
-        ) : (
-          <button
-            onClick={() => pauseFlow()}
-            disabled={txMessage !== ''}
-            className="text-sm h-min border-2 border-gray-400 rounded-md text-gray-400 hover:text-gray-800 bg-white">
-            {txMessage !== '' ? txMessage : 'Pause'}
-          </button>
-        )}
-
-        <button
-          onClick={() => unlockSubstation()}
-          disabled={unlocking}
-          className="hover:text-gray-400 tracking-wider cursor-pointer">
-          {unlocking ? 'Confirm signature...' : 'Go to Substation'}
-        </button>
-
-        <div className="flex flex-col items-end">
-          <div className="">DAI Until next Tier</div>
-          <FlowingBalance
-            balance={sub.toNextTier}
-            balanceTimestamp={Number(sub.balanceTimestamp)}
-            flowRate={sub.flowRate}
-            reverse={true}
-          />
-        </div>
-      </div>
-
-      <a
-        href={`https://goerli.etherscan.io/address/${sub.address}`}
-        target="_blank"
-        className="absolute top-2 right-4 text-gray-200 hover:text-gray-400 tracking-wider cursor-pointer"
-        rel="noreferrer">
-        <ShortAddress address={sub.address} />
-      </a>
 
       <div className="absolute bottom-0 w-full">
         <ProgressBar

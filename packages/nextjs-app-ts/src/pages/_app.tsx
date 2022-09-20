@@ -33,8 +33,9 @@ const savedTheme = 'light'
 
 // setup themes for theme switcher
 const themes = {
-  dark: './ant-dark-theme.css',
+  // dark: './ant-dark-theme.css',
   light: './ant-light-theme.css',
+  dark: './ant-light-theme.css',
 }
 
 // create eth components context for options and API keys

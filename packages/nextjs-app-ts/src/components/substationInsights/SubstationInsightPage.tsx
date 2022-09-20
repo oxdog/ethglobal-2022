@@ -20,14 +20,14 @@ import {
 } from '~~/config/app.config'
 import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
 import { TSubstation } from '~~/pages/user/substations'
-import { Substation } from './Substation'
+import { Substation } from './SubstationInsight'
 import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
 
-interface SubstationsPageProps {
+interface SubstationsInsightPageProps {
   substations: TSubstation[]
 }
 
-export const SubstationPage: React.FC<SubstationsPageProps> = ({ substations }) => {
+export const SubstationInsightPage: React.FC<SubstationsInsightPageProps> = ({ substations }) => {
   const [initiate, setInitiate] = useState<boolean>(false)
 
   useLoadUserOnWalletConnect()
@@ -101,4 +101,4 @@ export const SubstationPage: React.FC<SubstationsPageProps> = ({ substations }) 
   )
 }
 
-export default SubstationPage
+export default SubstationInsightPage

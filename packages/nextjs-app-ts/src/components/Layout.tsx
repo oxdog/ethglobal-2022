@@ -93,7 +93,7 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
       // <div style={{ zIndex: 2, position: 'absolute', right: 0, top: 90, padding: 16 }}>
       //   <Alert message="⚠️ Wrong Network" description={description} type="error" closable={false} />
       // </div>
-      <span className="absolute bottom-4 right-4 text-lg inline-flex items-center rounded-md bg-pink-100 px-2.5 py-0.5 font-medium text-pink-800">
+      <span className="fixed bottom-4 right-4 text-lg inline-flex items-center rounded-md bg-pink-100 px-2.5 py-0.5 font-medium text-pink-800">
         <IoMdWarning className="text-xl mr-2" />
         {description}
       </span>
@@ -101,7 +101,7 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
   } else {
     networkDisplay = (
       <div
-        className="absolute bottom-4 right-4"
+        className="fixed bottom-4 right-4"
         style={{
           color: scaffoldAppProviders.targetNetwork.color,
         }}>
@@ -112,7 +112,7 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
 
   return (
     <>
-      <div className="relative">
+      <div className="relative bg-white">
         {/* @ts-ignore */}
         <Transition.Root show={sidebarOpen} as={Fragment}>
           {/* @ts-ignore */}
@@ -264,19 +264,13 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
           </div>
 
           <main className="flex-1">
-            <div className="py-6">
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8 space-y-2 pb-4">
-                <div className="text-2xl font-semibold text-gray-900">{title}</div>
-                <div className="font-semibold text-gray-400">{subtitle}</div>
-              </div>
-
-              <div className="mx-auto max-w-7xl px-4 sm:px-6 md:px-8">{children}</div>
-            </div>
+            <div className="py-6 mx-auto max-w-7xl px-4 sm:px-6 md:px-8">{children}</div>
           </main>
         </div>
       </div>
 
       <div className="absolute">{notificationHolder}</div>
+
       {networkDisplay}
     </>
   )

@@ -8,7 +8,12 @@ export const SubscriptionsPage: React.FC<SubscriptionsPageProps> = ({}) => {
   const { initiated, loading, subscriptions } = useAppSelector((state) => state.subs)
 
   return (
-    <div className="relative py-8">
+    <div className="relative">
+      <div className="mx-auto max-w-7xl px-8 space-y-2 pb-12">
+        <div className="text-2xl font-semibold text-gray-900">Home of your Substations</div>
+        <div className="font-semibold text-gray-400">Here you can manage your Supersubs and visit their Substation</div>
+      </div>
+
       {initiated && (
         <>
           <div className="absolute inset-y-0 w-8 bg-gradient-to-r from-white to-transparent left-0 z-10" />
