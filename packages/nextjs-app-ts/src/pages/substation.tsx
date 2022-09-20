@@ -82,7 +82,7 @@ const Page: FC<SubstationPageProps> = ({ tierData, authorized }) => {
         <meta name="description" content="Substation content" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Layout title="Substation" subtitle="">
+      <Layout>
         <SubstationFeedPage tierData={tierData} authorized={authorized} />
       </Layout>
     </>

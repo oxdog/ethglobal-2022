@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { FC } from 'react'
+import { ExplorePage } from '~~/components/explore/ExplorePage'
 import { Layout } from '~~/components/Layout'
-import SubscriptionsPage from '~~/components/supscriptions/SubscriptionsPage'
 
 const Page: FC = () => {
   return (
@@ -12,7 +12,7 @@ const Page: FC = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Layout>
-        <SubscriptionsPage />
+        <ExplorePage />
       </Layout>
     </>
   )

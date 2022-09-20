@@ -1,93 +1,47 @@
-/* eslint-disable unused-imports/no-unused-vars-ts */
-
+import { SignalIcon } from '@heroicons/react/24/outline'
 import { Framework } from '@superfluid-finance/sdk-core'
-import { useEthersAdaptorFromProviderOrSigners, useSignerAddress } from 'eth-hooks'
 import { useEthersAppContext } from 'eth-hooks/context'
-import { asEthersAdaptor } from 'eth-hooks/functions'
 import { Signer } from 'ethers'
-import Head from 'next/head'
+import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { FC, ReactElement, useState } from 'react'
+import { FC, useState } from 'react'
+import { AiOutlineLoading } from 'react-icons/ai'
+import { IoMdCheckmark } from 'react-icons/io'
+import { SubInfo } from '~~/pages/subscribe'
+import { useAppSelector } from '~~/redux/hooks'
 
-import { useAppContracts, useConnectAppContracts, useLoadAppContracts } from '~common/components/context'
-import { useCreateAntNotificationHolder } from '~common/components/hooks/useAntNotification'
-import { useScaffoldAppProviders } from '~common/components/hooks/useScaffoldAppProviders'
-import {
-  ALCHEMY_KEY,
-  CONNECT_TO_BURNER_AUTOMATICALLY,
-  LOCAL_PROVIDER,
-  MAINNET_PROVIDER,
-  TARGET_NETWORK_INFO,
-} from '~~/config/app.config'
-import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
-import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
-import { useScaffoldHooksExamples } from '~~/hooks/useScaffoldHooksExamples'
-
-import { EmojiBubble } from '../EmojiBubble'
-import { Header } from '../Header'
 import { ShortAddress } from '../ShortAddress'
 
-interface iSubscriptionPageProps {
-  pageName: string
-  contract: string
-  children?: ReactElement
+interface SubscribePageProps {
+  subInfo: SubInfo
 }
 
-export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
-  const notificationHolder = useCreateAntNotificationHolder()
+export const SubscribePage: FC<SubscribePageProps> = ({ subInfo }) => {
+  const [txMessage, setTxMessage] = useState<string>('')
+  const [subscribing, setSubscribing] = useState<boolean>(false)
+  const [success, setSuccess] = useState<boolean>(false)
+
+  const loading = useAppSelector((state) => state.subs.loading)
+  const subMatch = useAppSelector((state) =>
+    state.subs.subscriptions.filter((s) => s.address === subInfo.address && s.active)
+  )
 
   const router = useRouter()
-
-  useLoadUserOnWalletConnect()
-  useClearCookiesOnDisconnect()
-
-  const [txMessage, setTxMessage] = useState<string>('')
-
-  // -----------------------------
-  // Providers, signers & wallets
-  // -----------------------------
-  // 🛰 providers
-  // see useLoadProviders.ts for everything to do with loading the right providers
-  const scaffoldAppProviders = useScaffoldAppProviders({
-    targetNetwork: TARGET_NETWORK_INFO,
-    connectToBurnerAutomatically: CONNECT_TO_BURNER_AUTOMATICALLY,
-    localProvider: LOCAL_PROVIDER,
-    mainnetProvider: MAINNET_PROVIDER,
-    alchemyKey: ALCHEMY_KEY,
-  })
-
-  // 🦊 Get your web3 ethers context from current providers
   const context = useEthersAppContext()
 
-  useScaffoldHooksExamples(scaffoldAppProviders)
-  const [myAddress] = useSignerAddress(context.signer)
-
-  // -----------------------------
-  // Load Contracts
-  // -----------------------------
-  // 🛻 load contracts
-  useLoadAppContracts()
-  // 🏭 connect to contracts for mainnet network & signer
-  const [mainnetAdaptor] = useEthersAdaptorFromProviderOrSigners(MAINNET_PROVIDER)
-  useConnectAppContracts(mainnetAdaptor)
-  // 🏭 connec to  contracts for current network & signer
-  useConnectAppContracts(asEthersAdaptor(context))
-
-  // init contracts
-  const Subscription_SuperApp = useAppContracts('SSA', context.chainId)
-
   const createFlow = async (receiver: string, flowRate: string) => {
-    setTxMessage('⏳🥪 Waiting for confirmation...')
-
-    const sf = await Framework.create({
-      chainId: 5,
-      provider: context.provider,
-    })
-
-    const DAIxContract = await sf.loadSuperToken('fDAIx')
-    const DAIx = DAIxContract.address
+    setTxMessage('Waiting for confirmation...')
+    setSubscribing(true)
 
     try {
+      const sf = await Framework.create({
+        chainId: 5,
+        provider: context.provider,
+      })
+
+      const DAIxContract = await sf.loadSuperToken('fDAIx')
+      const DAIx = DAIxContract.address
+
       const createFlowOperation = sf.cfaV1.createFlow({
         flowRate: flowRate,
         receiver,
@@ -97,16 +51,23 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
 
       const result = await createFlowOperation.exec(context.signer as Signer)
 
-      setTxMessage('⏳🥪 Creating Supersub...')
+      if (Object.keys(router.query).includes('reactivate')) {
+        setTxMessage('Re-activating Supersub...')
+      } else {
+        setTxMessage('Creating Supersub...')
+      }
+
       const recipe = await context.provider?.waitForTransaction(result.hash)
       if (recipe?.status === 0) {
-        setTxMessage('❌🥪 Transaction failed!')
+        setTxMessage('Transaction failed!')
       } else {
         if (Object.keys(router.query).includes('reactivate')) {
-          setTxMessage('✅🥪 Supersub re-activated!')
+          setTxMessage('Supersub re-activated!')
         } else {
-          setTxMessage('✅🥪 Supersub created!')
+          setTxMessage('Supersub created!')
         }
+
+        setSuccess(true)
       }
     } catch (error: any) {
       console.log(
@@ -115,7 +76,7 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
       console.error(error)
 
       if (error.code === 4001) {
-        setTxMessage('❌🥪 Cancelled Supersub!')
+        setTxMessage('Cancelled Supersub!')
       } else {
         setTxMessage('An error occured')
       }
@@ -123,47 +84,100 @@ export const SubscribePage: FC<iSubscriptionPageProps> = ({ contract }) => {
       setTimeout(function () {
         setTxMessage('')
       }, 4000)
+    } finally {
+      setSubscribing(false)
     }
   }
 
-  return (
-    <div className="App">
-      <Head>
-        <title>🥪 Subscribe</title>
-        <meta name="description" content="Generated by create next app" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <Header scaffoldAppProviders={scaffoldAppProviders} />
+  const renderInvalidAddress = () => (
+    <div className="relative flex flex-col z-10">
+      <div className="absolute -left-24 text-7xl transform scale-[3] opacity-50 pointer-events-none -z-10">😢</div>
+      <div className="text-5xl bg-white uppercase tracking-widest outline-4 outline-white font-bold text-gray-800">
+        Invalid Address
+      </div>
+    </div>
+  )
 
-      <div className="w-screen h-screen flex flex-col items-center justify-center">
-        <EmojiBubble emoji="🥪" />
-
-        <h1 className="w-min text-3xl">Supersub</h1>
-        <div className="flex flex-col items-center justify-center space-y-8">
-          <a
-            href={`https://goerli.etherscan.io/address/${contract}`}
-            target="_blank"
-            rel="noreferrer"
-            className="no-underline group-hover:text-gray-400 tracking-wider cursor-pointer">
-            <ShortAddress address={contract} />
-          </a>
-
-          {Object.keys(router.query).includes('reactivate') && (
-            <div>Subscribe and your the inactive Supersub will automatically be re-activtated</div>
-          )}
-
-          {txMessage !== '' ? (
-            <p className="text-2xl">{txMessage}</p>
-          ) : (
-            <button disabled={!context.provider} onClick={() => createFlow(contract, '58273944574335')}>
-              {!context.provider ? 'Connect Wallet' : 'Subscribe'}
-            </button>
-          )}
-        </div>
+  const renderSubscribe = () => (
+    <div className="relative flex flex-col z-10">
+      <div className="absolute -left-24 text-7xl transform scale-[3] -rotate-12 opacity-50 pointer-events-none -z-10">
+        🥪
+      </div>
+      <div className="text-5xl uppercase tracking-widest font-bold text-gray-800">Subscribe</div>
+      <div className="flex items-start space-x-4">
+        <div className="text-2xl mt-2 uppercase tracking-widest font-bold text-gray-800">to</div>
+        <div className="text-7xl uppercase tracking-widest font-bold text-gray-800">{subInfo?.name}</div>
+      </div>
+      <div className="self-end mr-2 font-semibold text-gray-400">
+        <a
+          href={`https://goerli.etherscan.io/address/${subInfo?.address}`}
+          target="_blank"
+          rel="noreferrer"
+          className="no-underline text-gray-400 hover:text-gray-400 tracking-wider cursor-pointer">
+          <ShortAddress address={subInfo?.address} />
+        </a>
       </div>
 
-      {/* <SubscribePageFooter scaffoldAppProviders={scaffoldAppProviders} /> */}
-      <div style={{ position: 'absolute' }}>{notificationHolder}</div>
+      {Object.keys(router.query).includes('reactivate') && (
+        <div className="self-end mt-2 mr-2 font-semibold text-gray-400">Subscribe to re-activate your Supersub</div>
+      )}
+
+      {!!context.provider ? (
+        <div className="flex flex-col items-end self-end space-y-8 mt-12">
+          {/* <div className="flex flex-col items-end font-semibold  text-gray-400 space-y-2">
+      <div>The Rate changes how fast you unlock tiers</div>
+      <div className="self-end w-72 h-12 rounded-lg ring border-green-400"></div>
+    </div> */}
+
+          <button
+            onClick={() => createFlow(subInfo.address, '58273944574335')}
+            disabled={subscribing || subMatch.length > 0}
+            type="button"
+            className={
+              'inline-flex relative items-center text-lg w-min cursor-pointer px-6 py-3 border transition-colors border-transparent font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
+            }>
+            {subscribing || loading ? (
+              <>
+                <AiOutlineLoading className="w-6 h-6 mr-4 animate-spin" />
+                <div> {loading ? 'Loading...' : 'Subscribing...'}</div>
+              </>
+            ) : (
+              <>
+                {subMatch.length > 0 || success ? (
+                  <>
+                    <IoMdCheckmark className="w-8 h-8 mr-2 mt-0.5" /> <div>Subscribed</div>
+                  </>
+                ) : (
+                  <>
+                    <SignalIcon className="w-8 h-8 mr-2 mt-0.5" /> <div>Subscribe</div>
+                  </>
+                )}
+              </>
+            )}
+            <div className="absolute -bottom-8 whitespace-nowrap right-0 text-base text-gray-300">{txMessage}</div>
+          </button>
+
+          {(success || subMatch.length > 0) && (
+            <Link href="/">
+              <div className="self-end mt-2 mr-2 cursor-pointer flex items-end space-x-1 text-lg font-semibold text-gray-400">
+                {success && <div>Success!</div>}
+                <div>View your Supersub</div>
+                <div className="underline text-green-400">here</div>
+              </div>
+            </Link>
+          )}
+        </div>
+      ) : (
+        <div className="self-end mt-12 text-right text-2xl uppercase tracking-wide  font-bold text-gray-600">
+          Please connect your wallet
+        </div>
+      )}
+    </div>
+  )
+
+  return (
+    <div className="flex flex-col items-center pt-48">
+      {subInfo.address === '' ? renderInvalidAddress() : renderSubscribe()}
     </div>
   )
 }

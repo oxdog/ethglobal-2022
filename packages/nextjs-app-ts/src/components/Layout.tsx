@@ -36,12 +36,10 @@ function classNames(...classes: any[]) {
 }
 
 interface LayoutProps {
-  title: string
-  subtitle?: string
   children?: React.ReactNode
 }
 
-export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => {
+export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const router = useRouter()
 
@@ -138,7 +136,7 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
                 leave="transition ease-in-out duration-300 transform"
                 leaveFrom="translate-x-0"
                 leaveTo="-translate-x-full">
-                <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-white">
+                <Dialog.Panel className="relative flex w-full max-w-xs flex-1 flex-col bg-gray-50">
                   <Transition.Child
                     as={Fragment}
                     enter="ease-in-out duration-300"
@@ -167,24 +165,28 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
                       </Link>
                     </div>
                     <nav className="mt-5">
-                      {navigation.map((item) => (
-                        <Link href={item.route} key={item.name}>
-                          <a
-                            onClick={() => router.push(item.route)}
-                            className={`${
-                              item.current ? 'bg-gray-100' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                            } group flex items-center text-gray-800 hover:text-green-400 transition-colors w-full px-2 py-4 text-sm font-medium bg-white border-0`}>
-                            <item.icon
-                              className={classNames(
-                                item.current ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500',
-                                'ml-4 mr-3 flex-shrink-0 h-6 w-6'
-                              )}
-                              aria-hidden="true"
-                            />
-                            {item.name}
-                          </a>
-                        </Link>
-                      ))}
+                      {navigation.map((item) => {
+                        const isCurrent = router.pathname === item.route
+
+                        return (
+                          <Link href={item.route} key={item.name}>
+                            <a
+                              onClick={() => router.push(item.route)}
+                              className={`${
+                                isCurrent ? 'bg-gray-100' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                              } group flex items-center text-gray-800 hover:text-green-400 transition-colors w-full px-2 py-4 text-sm font-medium border-0`}>
+                              <item.icon
+                                className={classNames(
+                                  isCurrent ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500',
+                                  'ml-4 mr-3 flex-shrink-0 h-6 w-6'
+                                )}
+                                aria-hidden="true"
+                              />
+                              {item.name}
+                            </a>
+                          </Link>
+                        )
+                      })}
                     </nav>
                   </div>
                   <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
@@ -205,9 +207,9 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
         </Transition.Root>
 
         {/* Static sidebar for desktop */}
-        <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col ">
+        <div className="hidden md:fixed md:inset-y-0 md:flex md:w-64 md:flex-col z-30 shadow-lg">
           {/* Sidebar component, swap this element with another sidebar if you like */}
-          <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white">
+          <div className="flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-gray-50">
             <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
               <div className="flex flex-shrink-0 items-center px-4 mb-4">
                 <Link href="/">
@@ -217,25 +219,28 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
                   </a>
                 </Link>
               </div>
-              <nav className="mt-5 flex-1 bg-white">
-                {navigation.map((item) => (
-                  <Link href={item.route} key={item.name}>
-                    <a
-                      onClick={() => router.push(item.route)}
-                      className={`${
-                        item.current ? 'bg-gray-100' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                      } group flex items-center text-gray-800 hover:text-green-400 transition-colors w-full px-2 py-4 text-sm font-medium bg-white border-0`}>
-                      <item.icon
-                        className={classNames(
-                          item.current ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500',
-                          'ml-4 mr-3 flex-shrink-0 h-6 w-6'
-                        )}
-                        aria-hidden="true"
-                      />
-                      {item.name}
-                    </a>
-                  </Link>
-                ))}
+              <nav className="mt-5 flex-1 bg-gray-50">
+                {navigation.map((item) => {
+                  const isCurrent = router.pathname === item.route
+                  return (
+                    <Link href={item.route} key={item.name}>
+                      <a
+                        onClick={() => router.push(item.route)}
+                        className={`${
+                          isCurrent ? 'bg-gray-100' : 'text-gray-600 bg-gray-50 hover:bg-gray-100 hover:text-gray-900'
+                        } group flex items-center text-gray-800 hover:text-green-400 transition-colors w-full px-2 py-4 text-sm font-medium bg-white border-0`}>
+                        <item.icon
+                          className={classNames(
+                            isCurrent ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500',
+                            'ml-4 mr-3 flex-shrink-0 h-6 w-6'
+                          )}
+                          aria-hidden="true"
+                        />
+                        {item.name}
+                      </a>
+                    </Link>
+                  )
+                })}
               </nav>
             </div>
             <div className="flex flex-shrink-0 self-start border-t border-gray-200 ml-6 mb-8">
@@ -256,7 +261,7 @@ export const Layout: React.FC<LayoutProps> = ({ title, subtitle, children }) => 
           <div className="sticky top-0 z-10 bg-white pl-1 pt-1 sm:pl-3 sm:pt-3 md:hidden">
             <button
               type="button"
-              className="-ml-0.5 -mt-0.5 inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              className="-ml-0.5 -mt-0.5 cursor-pointer inline-flex h-12 w-12 items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
               onClick={() => setSidebarOpen(true)}>
               <span className="sr-only">Open sidebar</span>
               <Bars3Icon className="h-6 w-6" aria-hidden="true" />

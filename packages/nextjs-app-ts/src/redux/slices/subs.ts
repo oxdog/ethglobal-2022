@@ -69,8 +69,6 @@ export const subSlice = createSlice({
   initialState,
   reducers: {
     resetSubs: (state) => {
-      console.log('RESET SUB STATE')
-
       state.loading = false
       state.initiated = false
       state.subscriptions = []
@@ -89,6 +87,9 @@ export const subSlice = createSlice({
         }
       })
     },
+    triggerReload: (state) => {
+      state.initiated = false
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(initSubscriptions.fulfilled, (state, action) => {
@@ -106,7 +107,7 @@ export const subSlice = createSlice({
   },
 })
 
-const { resetSubs, pauseSub } = subSlice.actions
+const { resetSubs, pauseSub, triggerReload } = subSlice.actions
 
-export { initSubscriptions, resetSubs, pauseSub }
+export { initSubscriptions, resetSubs, pauseSub, triggerReload }
 export default subSlice.reducer

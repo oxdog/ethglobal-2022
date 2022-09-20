@@ -196,7 +196,7 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
         // disabled={loading}
         type="button"
         className={
-          'inline-flex items-center w-min px-6 py-3 border transition-colors border-transparent text-base font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
+          'inline-flex items-center cursor-pointer w-min px-6 py-3 border transition-colors border-transparent text-base font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
         }>
         {inDecoding === tierId ? (
           <>

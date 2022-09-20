@@ -1,11 +1,17 @@
-import React from 'react'
-import { useAppSelector } from '~~/redux/hooks'
+import React, { useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from '~~/redux/hooks'
+import { triggerReload } from '~~/redux/slices/subs'
 import { Subscription } from './Subscription'
 
 interface SubscriptionsPageProps {}
 
 export const SubscriptionsPage: React.FC<SubscriptionsPageProps> = ({}) => {
   const { initiated, loading, subscriptions } = useAppSelector((state) => state.subs)
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    dispatch(triggerReload())
+  }, [dispatch])
 
   return (
     <div className="relative">

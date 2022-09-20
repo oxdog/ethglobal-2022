@@ -35,7 +35,6 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
   const [pausing, setPausing] = useState<boolean>(false)
 
   const client = useLitClient()
-
   const context = useEthersAppContext()
   const dispatch = useAppDispatch()
   const router = useRouter()
@@ -165,7 +164,7 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
   const drawInactiveSubElements = () => (
     <div className="flex flex-col items-center my-24 space-y-8">
       <div className="uppercase text-3xl font-bold tracking-widest text-gray-400">inactive</div>
-      <Link href={`/subscribe/${sub.address}?reactivate=true`}>
+      <Link href={`/subscribe?sub=${sub.address}&reactivate=true`}>
         <a className="inline-flex items-center cursor-pointer px-6 py-3 border transition-colors border-transparent text-base font-medium rounded-full shadow-sm text-gray-800 hover:text-green-400 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
           <BsArrowRepeat className="w-8 h-8 mr-2" />
           <div className="flex items-center"> Re-Activate </div>
@@ -192,12 +191,13 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
               <Popover.Button
                 className={classNames(
                   open ? 'text-gray-900' : 'text-gray-500',
-                  'flex items-center justify-center w-10 h-10 rounded-full bg-white bg-opacity-25 border-0 hover:text-gray-900 focus:outline-none'
+                  'relative flex items-center justify-center w-10 h-10 rounded-full bg-white bg-opacity-25 border-0 hover:text-gray-900 focus:outline-none'
                 )}>
                 <BsThreeDotsVertical
                   className={classNames(open ? 'text-gray-600' : 'text-gray-400', 'h-6 w-6 group-hover:text-gray-500')}
                   aria-hidden="true"
                 />
+                {pausing && <AiOutlineLoading className="absolute w-6 h-6 -left-6 animate-spin" />}
               </Popover.Button>
 
               {/* @ts-ignore */}
@@ -214,7 +214,7 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
                     <button
                       onClick={() => pauseFlow()}
                       disabled={pausing}
-                      className="flex items-center transition space-x-2 px-2 py-2 bg-white text-gray-800 border-0 duration-150 ease-in-out hover:bg-gray-50">
+                      className="flex items-center cursor-pointer transition space-x-2 px-2 py-2 bg-white text-gray-800 border-0 duration-150 ease-in-out hover:bg-gray-50">
                       {pausing ? (
                         <>
                           <AiOutlineLoading className="w-6 h-6 animate-spin" />

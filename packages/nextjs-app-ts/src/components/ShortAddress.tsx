@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface ShortAddressProps {
-  address: string
+  address?: string
 }
 
 export const ShortAddress: React.FC<ShortAddressProps> = ({ address = '' }) => {

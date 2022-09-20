@@ -7,6 +7,8 @@ import { ethers } from 'ethers'
 import _ from 'lodash'
 import { Subscription_SuperApp } from '~common/generated/contract-types'
 import { SSAJson } from '~~/helpers/constants'
+import Head from 'next/head'
+import { Layout } from '~~/components/Layout'
 
 export const getServerSideProps: GetServerSideProps = async ({}) => {
   console.log('\n\n\ngetServerSideProps')
@@ -66,7 +68,19 @@ interface SubstationInsightPageProps {
 }
 
 const Page: FC<SubstationInsightPageProps> = ({ substations }) => {
-  return <SubstationInsightPage substations={substations} />
+  return (
+    <>
+      <Head>
+        <title>🥪 Home </title>
+        <meta name="description" content="Home of your Supersubs" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <Layout>
+        <SubstationInsightPage substations={substations} />
+      </Layout>
+    </>
+  )
 }
 
 export default Page

@@ -16,14 +16,12 @@ export const useLoadUserOnWalletConnect = () => {
   useEffect(() => {
     const setup = async () => {
       if (!loading && !initiated && context.signer) {
-        console.log('New signer')
         setLoading(true)
         await dispatch(initSubscriptions(context.account as string))
         setLoading(false)
       }
 
       if (!loading && initiated && !context.signer) {
-        console.log('no signer')
         setLoading(true)
         dispatch(resetSubs())
         setLoading(false)
