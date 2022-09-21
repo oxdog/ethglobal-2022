@@ -1,15 +1,12 @@
 import { SignalIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import React from 'react'
+import { breadStation, mevStation, oxdogStation } from '~~/helpers/constants'
 import { ShortAddress } from '../ShortAddress'
 
 interface ExplorePageProps {}
 
 export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
-  const oxdogAddress = '0xBCa2081845Bb4cc52FeAC84f38B4A5Ef41B1C0e'
-  const breadAddress = '0xBCa2081845Bb4cc52FeAC84f38B4A5Ef41B1C0e'
-  const mevAddress = '0xBCa2081845Bb4cc52FeAC84f38B4A5Ef41B1C0e'
-
   return (
     <>
       <div className="max-w-7xl px-8 space-y-2 pb-12">
@@ -21,7 +18,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
           {/* OXDOG STATION */}
           <div className="relative aspect-square h-72 p-8 shadow bg-gray-50 rounded-lg overflow-hidden">
             <div className="absolute right-0 top-0 text-7xl transform scale-[3] -rotate-12 opacity-50 pointer-events-none">
-              🥪
+              {oxdogStation.emoji}
             </div>
             <div className="relative flex flex-col h-full justify-between z-20">
               <div>
@@ -33,22 +30,22 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 </div>
                 <div className="mr-2 font-semibold text-gray-400">
                   <a
-                    href={`https://goerli.etherscan.io/address/${oxdogAddress}`}
+                    href={`https://goerli.etherscan.io/address/${oxdogStation.address}`}
                     target="_blank"
                     rel="noreferrer"
                     className="no-underline text-gray-400 hover:text-gray-400 tracking-wider cursor-pointer">
-                    <ShortAddress address={oxdogAddress} />
+                    <ShortAddress address={oxdogStation.address} />
                   </a>
                 </div>
               </div>
 
-              <Link href={`/subscribe?sub=${oxdogAddress}&reactivate=true`}>
-                <a
+              <Link href={`/subscribe?sub=${oxdogStation.address}&reactivate=true`}>
+                <div
                   className={
                     'inline-flex relative items-center text-lg w-min cursor-pointer px-6 py-3 border transition-colors border-transparent font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
                   }>
                   <SignalIcon className="w-8 h-8 mr-2 mt-0.5" /> <div>Subscribe</div>
-                </a>
+                </div>
               </Link>
             </div>
           </div>
@@ -56,7 +53,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
           {/* BREAD STATION */}
           <div className="relative aspect-square h-72 p-8 shadow bg-gray-50 rounded-lg overflow-hidden">
             <div className="absolute -right-8 bottom-8 text-7xl transform scale-[3] -rotate-12 opacity-50 pointer-events-none">
-              🥖
+              {breadStation.emoji}
             </div>
             <div className="relative flex flex-col h-full justify-between z-20">
               <div>
@@ -64,22 +61,22 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 <div className="text-5xl uppercase tracking-widest font-bold text-gray-800">Station</div>
                 <div className="mr-2 font-semibold text-gray-400">
                   <a
-                    href={`https://goerli.etherscan.io/address/${breadAddress}`}
+                    href={`https://goerli.etherscan.io/address/${breadStation.address}`}
                     target="_blank"
                     rel="noreferrer"
                     className="no-underline text-gray-400 hover:text-gray-400 tracking-wider cursor-pointer">
-                    <ShortAddress address={breadAddress} />
+                    <ShortAddress address={breadStation.address} />
                   </a>
                 </div>
               </div>
 
-              <Link href={`/subscribe?sub=${breadAddress}&reactivate=true`}>
-                <a
+              <Link href={`/subscribe?sub=${breadStation.address}&reactivate=true`}>
+                <div
                   className={
                     'inline-flex relative items-center text-lg w-min cursor-pointer px-6 py-3 border transition-colors border-transparent font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
                   }>
                   <SignalIcon className="w-8 h-8 mr-2 mt-0.5" /> <div>Subscribe</div>
-                </a>
+                </div>
               </Link>
             </div>
           </div>
@@ -87,7 +84,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
           {/* MEV STATION */}
           <div className="relative aspect-square h-72 p-8 shadow bg-gray-50 rounded-lg overflow-hidden">
             <div className="absolute right-0 top-0 text-7xl transform scale-[3] rotate-12 opacity-50 pointer-events-none">
-              ⚡
+              {mevStation.emoji}
             </div>
             <div className="relative flex flex-col h-full justify-between z-20">
               <div>
@@ -99,22 +96,22 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 </div>
                 <div className="mr-2 font-semibold text-gray-400">
                   <a
-                    href={`https://goerli.etherscan.io/address/${mevAddress}`}
+                    href={`https://goerli.etherscan.io/address/${mevStation.address}`}
                     target="_blank"
                     rel="noreferrer"
                     className="no-underline text-gray-400 hover:text-gray-400 tracking-wider cursor-pointer">
-                    <ShortAddress address={mevAddress} />
+                    <ShortAddress address={mevStation.address} />
                   </a>
                 </div>
               </div>
 
-              <Link href={`/subscribe?sub=${mevAddress}&reactivate=true`}>
-                <a
+              <Link href={`/subscribe?sub=${mevStation.address}&reactivate=true`}>
+                <div
                   className={
                     'inline-flex relative items-center text-lg w-min cursor-pointer px-6 py-3 border transition-colors border-transparent font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
                   }>
                   <SignalIcon className="w-8 h-8 mr-2 mt-0.5" /> <div>Subscribe</div>
-                </a>
+                </div>
               </Link>
             </div>
           </div>

@@ -7,6 +7,7 @@ import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import { AiOutlineLoading } from 'react-icons/ai'
 import { IoMdCheckmark } from 'react-icons/io'
+import { EMOJIS } from '~~/helpers/constants'
 import { SubInfo } from '~~/pages/subscribe'
 import { useAppSelector } from '~~/redux/hooks'
 
@@ -101,11 +102,11 @@ export const SubscribePage: FC<SubscribePageProps> = ({ subInfo }) => {
   const renderSubscribe = () => (
     <div className="relative flex flex-col z-10">
       <div className="absolute -left-24 text-7xl transform scale-[3] -rotate-12 opacity-50 pointer-events-none -z-10">
-        🥪
+        {EMOJIS[subInfo.address]}
       </div>
-      <div className="text-5xl uppercase tracking-widest font-bold text-gray-800">Subscribe</div>
+      <div className="text-5xl uppercase tracking-widest font-bold bg-white bg-opacity-50 text-gray-800">Subscribe</div>
       <div className="flex items-start space-x-4">
-        <div className="text-2xl mt-2 uppercase tracking-widest font-bold text-gray-800">to</div>
+        <div className="text-2xl mt-2 uppercase tracking-widest font-bold text-gray-800 bg-white bg-opacity-50">to</div>
         <div className="text-7xl uppercase tracking-widest font-bold text-gray-800">{subInfo?.name}</div>
       </div>
       <div className="self-end mr-2 font-semibold text-gray-400">

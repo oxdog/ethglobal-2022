@@ -1,5 +1,5 @@
-// @ts-expect-error
 import { SignalIcon } from '@heroicons/react/24/outline'
+// @ts-expect-error
 import LitJsSdk from '@lit-protocol/sdk-browser'
 import Cookies from 'cookies'
 import { useEthersAppContext } from 'eth-hooks/context'
@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react'
 import { AiOutlineLoading } from 'react-icons/ai'
 import { FaLock, FaUnlock } from 'react-icons/fa'
 import { Subscription_SuperApp } from '~common/generated/contract-types'
-import { SSAJson, SUBSTATION_WHITELIST } from '~~/helpers/constants'
+import { EMOJIS, SSAJson, SUBSTATION_WHITELIST } from '~~/helpers/constants'
 import { generateEvmContractConditions } from '~~/helpers/generateEvmContractConditions'
 import { getSigningMsg } from '~~/helpers/getSigningMsg'
 import { useLitClient } from '~~/hooks/useLitClient'
@@ -260,11 +260,17 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
         </div>
       </div>
 
+      <div className="fixed right-0 top-0 text-7xl transform scale-[3] -rotate-12 opacity-50 pointer-events-none z-40">
+        {EMOJIS[sub?.address || '']}
+      </div>
+
       {/* Navigation */}
       {authorized && (
         <div className="flex flex-col flex-none w-48 space-y-4">
           <div className="sticky right-8 top-6 w-48 space-y-4 z-40">
-            <div className="text-2xl text-start uppercase tracking-widest font-bold">Navigation</div>
+            <div className="text-2xl text-start uppercase tracking-widest bg-white bg-opacity-50 font-bold">
+              Navigation
+            </div>
 
             <div className="space-y-4">
               {tierData.map((_, i) => (

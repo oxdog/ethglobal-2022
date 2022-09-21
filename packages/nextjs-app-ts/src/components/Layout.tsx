@@ -1,7 +1,7 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { getNetwork } from '@ethersproject/networks'
 import { Dialog, Transition } from '@headlessui/react'
-import { Bars3Icon, ChartBarIcon, HomeIcon, UsersIcon } from '@heroicons/react/24/outline'
+import { Bars3Icon, ChartBarIcon, HomeIcon } from '@heroicons/react/24/outline'
 import {
   connectorErrorText,
   CouldNotActivateError,
@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import React, { Fragment, ReactElement, useCallback, useState } from 'react'
 import { GrFormClose } from 'react-icons/gr'
+import { ImCompass2 } from 'react-icons/im'
 import { IoMdWarning } from 'react-icons/io'
 import { useAntNotification, useCreateAntNotificationHolder, useScaffoldAppProviders } from '~common/components'
 import {
@@ -24,10 +25,11 @@ import {
 import { useClearCookiesOnDisconnect } from '~~/hooks/useClearCookiesOnDisconnect'
 import { useLoadUserOnWalletConnect } from '~~/hooks/useLoadUserOnWalletConnect'
 import { Account } from './Account'
+import { DemoModal } from './DemoModal'
 
 const navigation = [
   { name: 'Home', route: '/', icon: HomeIcon, current: true },
-  { name: 'Explore', route: '/explore', icon: UsersIcon, current: false },
+  { name: 'Explore', route: '/explore', icon: ImCompass2, current: false },
   { name: 'Creator Dashboard', route: '/user/substations', icon: ChartBarIcon, current: false },
 ]
 
@@ -275,6 +277,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       <div className="absolute">{notificationHolder}</div>
+
+      <DemoModal />
 
       {networkDisplay}
     </>
