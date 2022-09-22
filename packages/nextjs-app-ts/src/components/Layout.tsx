@@ -8,9 +8,11 @@ import {
   NoStaticJsonRPCProviderFoundError,
   useEthersAppContext,
 } from 'eth-hooks/context'
+import Cookies from 'js-cookie'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import React, { Fragment, ReactElement, useCallback, useState } from 'react'
+import React, { Fragment, ReactElement, useCallback, useEffect, useState } from 'react'
+import { BsWindow } from 'react-icons/bs'
 import { GrFormClose } from 'react-icons/gr'
 import { ImCompass2 } from 'react-icons/im'
 import { IoMdWarning } from 'react-icons/io'
@@ -44,6 +46,13 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const router = useRouter()
+  const [openDemo, setOpenDemo] = useState(false)
+
+  useEffect(() => {
+    if (!Cookies.get('demoModal')) {
+      setOpenDemo(true)
+    }
+  }, [])
 
   useLoadUserOnWalletConnect()
   useClearCookiesOnDisconnect()
@@ -243,6 +252,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     </Link>
                   )
                 })}
+                <div>
+                  <button
+                    onClick={() => setOpenDemo(true)}
+                    className="bg-gray-50 cursor-pointer hover:bg-gray-100 group flex items-center text-gray-800 hover:text-green-400 transition-colors w-full px-2 py-4 text-sm font-medium border-0">
+                    <BsWindow className="text-gray-400 group-hover:text-gray-500 ml-4 mr-3 flex-shrink-0 h-6 w-6" />
+                    DemoModal
+                  </button>
+                </div>
               </nav>
             </div>
             <div className="flex flex-shrink-0 self-start border-t border-gray-200 ml-6 mb-8">
@@ -252,7 +269,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 ensProvider={scaffoldAppProviders.mainnetAdaptor?.provider}
                 blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
                 hasContextConnect={true}
-                price={0}
               />
             </div>
           </div>
@@ -278,7 +294,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <div className="absolute">{notificationHolder}</div>
 
-      <DemoModal />
+      <DemoModal scaffoldAppProviders={scaffoldAppProviders} open={openDemo} setOpen={setOpenDemo} />
 
       {networkDisplay}
     </>

@@ -21,7 +21,6 @@ export interface IAccountProps {
   hasContextConnect: boolean
   fontSize?: number
   blockExplorer: string
-  price: number
 }
 
 export const Account: FC<IAccountProps> = (props: IAccountProps) => {

@@ -1,20 +1,40 @@
 /* This example requires Tailwind CSS v2.0+ */
 import { Dialog, Transition } from '@headlessui/react'
-import React, { Fragment, useEffect, useState } from 'react'
+import { useEthersAppContext } from 'eth-hooks/context'
+import Cookies from 'js-cookie'
+import React, { Dispatch, Fragment, SetStateAction, useEffect, useState } from 'react'
 import { IoIosCheckmark } from 'react-icons/io'
+import { IScaffoldAppProviders } from '~common/models'
 import { SUPERTOKEN_ADDRESS } from '~~/helpers/constants'
+import { Account } from './Account'
 
-interface DemoModalProps {}
+interface DemoModalProps {
+  open: boolean
+  setOpen: Dispatch<SetStateAction<boolean>>
+  scaffoldAppProviders: IScaffoldAppProviders
+  onLoginError: (e: Error) => void
+}
 
-export const DemoModal: React.FC<DemoModalProps> = ({}) => {
-  const [open, setOpen] = useState(true)
-  const [step, setStep] = useState(0)
+export const DemoModal: React.FC<DemoModalProps> = ({ open, setOpen, scaffoldAppProviders, onLoginError }) => {
+  const [step, setStep] = useState(1)
+  const context = useEthersAppContext()
 
   useEffect(() => {
-    if (step >= 5) {
+    if (step >= 6) {
       setStep(0)
     }
   }, [step])
+
+  useEffect(() => {
+    if (open) {
+      setStep(0)
+    }
+  }, [open])
+
+  const finish = () => {
+    Cookies.set('demoModal', 'true')
+    setOpen(false)
+  }
 
   const Welcome = () => (
     <div className="text-5xl px-2 space-y-2 text-center uppercase tracking-widest font-bold bg-white bg-opacity-50 text-gray-800">
@@ -53,6 +73,83 @@ export const DemoModal: React.FC<DemoModalProps> = ({}) => {
         onClick={() => setStep(step + 1)}>
         Next Step
       </button>
+    </div>
+  )
+
+  const drawStepConnect = () => (
+    <div className="text-lg text-center space-y-16 pt-8">
+      <div className="flex flex-col items-center space-y-2">
+        <div>First, please connect your wallet</div>
+        <Account
+          createLoginConnector={scaffoldAppProviders.createLoginConnector}
+          loginOnError={onLoginError}
+          ensProvider={scaffoldAppProviders.mainnetAdaptor?.provider}
+          blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
+          hasContextConnect={true}
+        />
+      </div>
+
+      {!!context?.account ? (
+        <PrevNextButtons />
+      ) : (
+        <button
+          type="button"
+          className="inline-flex w-full justify-center rounded-md cursor-pointer border border-transparent bg-gray-200 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+          onClick={() => setStep(step - 1)}>
+          Prev Step
+        </button>
+      )}
+    </div>
+  )
+
+  const drawStepAddNetwork = () => (
+    <div className="flex flex-col items-center text-center space-y-12 pt-8 w-full bg-white bg-opacity-50 text-lg text-gray-800">
+      <div className="space-y-8">
+        <div className="space-y-8">
+          <div className="space-y-4">
+            <div>
+              First you need to be connected to Polygon Testnet Mumbai. This is where the contracts of the demo are
+              deployed.
+            </div>
+            <div>Here is the network information:</div>
+          </div>
+
+          {/* <button
+            type="button"
+            className="inline-flex w-min whitespace-nowrap text-2xl justify-center rounded-md cursor-pointer border border-transparent bg-green-400 px-8 py-2 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            onClick={() => setStep(step - 1)}>
+            Add Network
+          </button> */}
+
+          <div className="text-center bg-gray-100 py-2 text-gray-500">
+            <div>
+              Network Name <b>Mumbai Network</b>
+            </div>
+            <div>
+              URL <b>https://matic-mumbai.chainstacklabs.com</b>
+            </div>
+            <div>
+              Chain ID <b>80001</b>
+            </div>
+            <div>
+              Currency Symbol <b>MATIC</b>
+            </div>
+            <div>
+              Block Explorer URL <b>https://mumbai.polygonscan.com</b>
+            </div>
+          </div>
+
+          {/* <div>
+            You can also go to{' '}
+            <a target="_blank" className="text-green-400" href="https://chainlist.org/" rel="noreferrer">
+              Chainlist
+            </a>{' '}
+            , search for Mumbai and add it there. Make sure to toggle testnets besides the searchbar on
+          </div> */}
+        </div>
+      </div>
+
+      <PrevNextButtons />
     </div>
   )
 
@@ -106,49 +203,6 @@ export const DemoModal: React.FC<DemoModalProps> = ({}) => {
     </div>
   )
 
-  const drawStepAddNetwork = () => (
-    <div className="flex flex-col items-center text-center space-y-12 pt-8 w-full bg-white bg-opacity-50 text-lg text-gray-800">
-      <div className="space-y-8">
-        <div className="space-y-8">
-          <div className="space-y-4">
-            <div>
-              First you need to be connected to Polygon Testnet Mumbai. This is where the contracts of the demo are
-              deployed.
-            </div>
-            <div>You can use the button or type add the network manually</div>
-          </div>
-
-          <button
-            type="button"
-            className="inline-flex w-min whitespace-nowrap text-2xl justify-center rounded-md cursor-pointer border border-transparent bg-green-400 px-8 py-2 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-            onClick={() => setStep(step - 1)}>
-            Add Network
-          </button>
-
-          <div className="text-center text-gray-300">
-            <div>
-              Network Name <b>Mumbai Network</b>
-            </div>
-            <div>
-              URL <b>https://matic-mumbai.chainstacklabs.com</b>
-            </div>
-            <div>
-              Chain ID <b>80001</b>
-            </div>
-            <div>
-              Currency Symbol <b>MATIC</b>
-            </div>
-            <div>
-              Block Explorer URL <b>https://mumbai.polygonscan.com</b>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <PrevNextButtons />
-    </div>
-  )
-
   const drawStepFinished = () => (
     <div className="flex flex-col items-center text-center space-y-12 pt-8 w-full bg-white bg-opacity-50 text-lg text-gray-800">
       <div className="space-y-8">
@@ -171,7 +225,7 @@ export const DemoModal: React.FC<DemoModalProps> = ({}) => {
           </div>
 
           <div className="text-2xl">Have fun trying out Supersub Demo!🥪</div>
-          <div className="text-gray-300">You can re-open this modal with the button at the bottom of the screen</div>
+          <div className="text-gray-300">You can re-open this modal via the menu</div>
         </div>
       </div>
 
@@ -185,7 +239,7 @@ export const DemoModal: React.FC<DemoModalProps> = ({}) => {
         <button
           type="button"
           className="inline-flex w-full justify-center rounded-md cursor-pointer border border-transparent bg-green-400 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-          onClick={() => setOpen(false)}>
+          onClick={finish}>
           Start Demo
         </button>
       </div>
@@ -197,13 +251,16 @@ export const DemoModal: React.FC<DemoModalProps> = ({}) => {
       case 0:
         return drawStepWelcome()
       case 1:
-        return drawStepAddNetwork()
+        return drawStepConnect()
       case 2:
-        return drawStepTestETH()
+        return drawStepAddNetwork()
       case 3:
-        return drawStepTokenFaucet()
+        return drawStepTestETH()
       case 4:
+        return drawStepTokenFaucet()
+      case 5:
         return drawStepFinished()
+
       default:
         return drawStepWelcome()
     }
@@ -213,7 +270,14 @@ export const DemoModal: React.FC<DemoModalProps> = ({}) => {
     // @ts-ignore
     <Transition.Root show={open} as={Fragment}>
       {/* @ts-ignore */}
-      <Dialog as="div" className="relative  z-50" onClose={setOpen}>
+      <Dialog
+        as="div"
+        className="relative  z-50"
+        onClose={() => {
+          if (Cookies.get('demoModal')) {
+            setOpen(false)
+          }
+        }}>
         {/* @ts-ignore */}
         <Transition.Child
           as={Fragment}
@@ -225,6 +289,7 @@ export const DemoModal: React.FC<DemoModalProps> = ({}) => {
           leaveTo="opacity-0">
           <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
         </Transition.Child>
+
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
             <Transition.Child
@@ -240,9 +305,6 @@ export const DemoModal: React.FC<DemoModalProps> = ({}) => {
                   <div className="absolute -left-12 text-7xl transform scale-[3] -rotate-12 opacity-50 pointer-events-none -z-10">
                     🥪
                   </div>
-                  {/* <div className="absolute right-8 -bottom-4 text-7xl transform scale-[3] -rotate-12 opacity-50 pointer-events-none -z-10">
-                    🥖
-                  </div> */}
                   <div className="absolute right-12 -top-16 text-7xl transform scale-[3] rotate-12 opacity-50 pointer-events-none -z-10">
                     ⚡
                   </div>
