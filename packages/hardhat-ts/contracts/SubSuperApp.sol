@@ -62,7 +62,6 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     ISuperToken _acceptedToken,
     string memory _name,
     string memory _symbol,
-    string memory _w3name,
     uint256[] memory _tiers
   ) ERC721(_name, _symbol) {
     assert(address(_host) != address(0));
@@ -81,7 +80,6 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     passTracker.increment(); //start passId at 1
 
     tiers = _tiers;
-    w3name = _w3name;
   }
 
   // ---------------------------------------------------------------------------------------------
@@ -340,5 +338,13 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
     } else {
       (active, , , , tier, ) = getPassdata(passId);
     }
+  }
+
+  /// @dev This Method only exsits for DEMO PURPOSES ONLY.
+  // In the front-end users can emulate buying the pass from opensea, to shortcircuit the protocol issues a pass directly
+  function airdropPass(uint256 _startBalance, address _receiver) external {
+    require(balanceOf(_receiver) == 0, "SSA: Receiver already owns a pass");
+    _issuePass(_receiver);
+    TTV[activePass[_receiver]] = _startBalance;
   }
 }

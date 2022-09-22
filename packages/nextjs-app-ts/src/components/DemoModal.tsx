@@ -69,7 +69,7 @@ export const DemoModal: React.FC<DemoModalProps> = ({ open, setOpen, scaffoldApp
       setClaiming(true)
 
       console.log('context.account', context.account)
-      console.log(tokenFaucet.address)
+      console.log('tokenFaucet.address', tokenFaucet.address)
 
       const canClaim = await tokenFaucet.elligible(context.account)
       console.log('canClaim', canClaim)

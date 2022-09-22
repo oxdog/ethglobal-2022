@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { createConnectorForExternalContract, createConnectorForHardhatContract } from 'eth-hooks/context';
+import { createConnectorForHardhatContract } from 'eth-hooks/context';
 import { invariant } from 'ts-invariant';
 
-import { externalContractsAddressMap } from './externalContracts.config';
+// import { externalContractsAddressMap } from './externalContracts.config';
 
 import * as hardhatContracts from '~common/generated/contract-types';
-import * as externalContracts from '~common/generated/external-contracts/esm/types';
+// import * as externalContracts from '~common/generated/external-contracts/esm/types';
 import hardhatDeployedContractsJson from '~common/generated/hardhat_contracts.json';
 
 /**
@@ -41,7 +41,22 @@ export const getAppContractsConfig = () => {
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your external contracts here, make sure to define the address in `externalContractsConfig.ts`Í
       // --------------------------------------------------
-      fDAIx: createConnectorForExternalContract('DAI', externalContracts.DAI__factory, externalContractsAddressMap),
+      // fDAIx: createConnectorForExternalContract('DAI', externalContracts.DAI__factory, externalContractsAddressMap),
+      // OXDOG_SSA: createConnectorForExternalContract(
+      //   'Subscription_SuperApp',
+      //   hardhatContracts.Subscription_SuperApp__factory,
+      //   externalContractsAddressMap
+      // ),
+      // BREAD_SSA: createConnectorForExternalContract(
+      //   'Subscription_SuperApp',
+      //   hardhatContracts.Subscription_SuperApp__factory,
+      //   externalContractsAddressMap
+      // ),
+      // MEV_SSA: createConnectorForExternalContract(
+      //   'Subscription_SuperApp',
+      //   hardhatContracts.Subscription_SuperApp__factory,
+      //   externalContractsAddressMap
+      // ),
 
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your external abi here (unverified contracts)`

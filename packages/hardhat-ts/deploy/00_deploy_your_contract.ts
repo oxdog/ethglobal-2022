@@ -8,23 +8,14 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
   const { deployer } = await getNamedAccounts()
 
   // Mumbai
-  const SUPERFLUID_HOST = '0x22ff293e14F1EC3A09B137e9e06084AFd63adDF9'
+  const SUPERFLUID_HOST = '0xEB796bdb90fFA0f28255275e16936D25d3418603'
   const DAIX = '0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f'
-
-  return
 
   // OXDOG STATION
   await deploy('Subscription_SuperApp', {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [
-      SUPERFLUID_HOST,
-      DAIX,
-      'OXDOG STATION',
-      'OXD',
-      'TBD', // ! TBD
-      [0, utils.parseEther('60'), utils.parseEther('120'), utils.parseEther('240')],
-    ],
+    args: [SUPERFLUID_HOST, DAIX, 'OXDOG STATION', 'OXD', [0, utils.parseEther('60'), utils.parseEther('120'), utils.parseEther('240')]],
     log: true,
     gasLimit: 10_000_000,
   })
@@ -33,14 +24,7 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
   await deploy('Subscription_SuperApp', {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [
-      SUPERFLUID_HOST,
-      DAIX,
-      'BREAD STATION',
-      'BRD',
-      'TBD', // ! TBD
-      [0, utils.parseEther('10'), utils.parseEther('20')],
-    ],
+    args: [SUPERFLUID_HOST, DAIX, 'BREAD STATION', 'BRD', [0, utils.parseEther('1'), utils.parseEther('2')]],
     log: true,
     gasLimit: 10_000_000,
   })
@@ -54,7 +38,6 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
       DAIX,
       'MEV STATION',
       'MEV',
-      'TBD', // ! TBD
       [0, utils.parseEther('240'), utils.parseEther('380'), utils.parseEther('760'), utils.parseEther('1800')],
     ],
     log: true,

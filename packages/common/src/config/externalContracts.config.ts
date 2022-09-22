@@ -17,6 +17,6 @@ export const externalContractsAddressMap: TExternalContractsAddressMap = {
     DAI: '0x6b175474e89094c44da98b954eedeac495271d0f',
   },
   [NetworkID.POLYGON_MUMBAI]: {
-    fDAI: '0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f',
+    // fDAI: '0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f',
   },
 };
