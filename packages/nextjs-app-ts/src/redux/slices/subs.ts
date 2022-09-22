@@ -32,7 +32,7 @@ const initialState: SubState = {
   initiated: false,
 }
 
-const provider = new ethers.providers.AlchemyProvider('goerli', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
+const provider = new ethers.providers.AlchemyProvider('maticmum', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
 const SSA = new ethers.Contract(SSAJson.address, SSAJson.abi, provider) as Subscription_SuperApp
 
 const initSubscriptions = createAsyncThunk('sub/initSubs', async (account: string, _thunkAPI) => {

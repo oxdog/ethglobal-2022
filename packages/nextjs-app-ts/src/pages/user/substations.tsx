@@ -12,7 +12,7 @@ import { Layout } from '~~/components/Layout'
 
 export const getServerSideProps: GetServerSideProps = async ({}) => {
   console.log('\n\n\ngetServerSideProps')
-  const provider = new ethers.providers.AlchemyProvider('goerli', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
+  const provider = new ethers.providers.AlchemyProvider('maticmum', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
   const SSA = new ethers.Contract(SSAJson.address, SSAJson.abi, provider) as Subscription_SuperApp
 
   const generalInfo = await SSA.generalInfo()

@@ -52,7 +52,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
 
   try {
     if (sub && ethers.utils.isAddress(sub)) {
-      const provider = new ethers.providers.AlchemyProvider('goerli', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
+      const provider = new ethers.providers.AlchemyProvider('maticmum', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
       const SSA = new ethers.Contract(sub, SSAJson.abi, provider) as Subscription_SuperApp
       const generalInfo = await SSA.generalInfo()
 
@@ -100,7 +100,7 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
 
   useEffect(() => console.log('subscription', sub), [sub])
 
-  const chain = 'goerli'
+  const chain = 'mumbai'
   const evmContractConditions = generateEvmContractConditions(SSAJson.address, chain, 0)
 
   const client = useLitClient()
@@ -222,7 +222,7 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
               </div>
 
               <a
-                href={`https://goerli.etherscan.io/address/${sub?.address}`}
+                href={`https://mumbai.polygonscan.com/address/${sub?.address}`}
                 target="_blank"
                 rel="noreferrer"
                 className="text-sm flex items-center pb-4 text-start text-gray-400 uppercase break-all tracking-widest font-bold">

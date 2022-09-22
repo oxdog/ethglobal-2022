@@ -1,5 +1,5 @@
 // const ALCHEMY_KEY = process.env.NEXT_PUBLIC_KEY_ALCHEMY;
-const ALCHEMY_KEY = 'uy0331LLTlWAR9rOmF2jRkCdNj4JpQu6';
+const ALCHEMY_KEY = '_Ag990b-Pkt1nbXkkKRsyAnNIKhZTrSX'; // did not load env, hardcoding, this env can be public
 
 let hostname = 'localhost';
 if (typeof window !== 'undefined' && window != null) {
@@ -79,7 +79,7 @@ export const NETWORKS = {
     chainId: 80001,
     price: 1,
     gasPrice: 2000000000,
-    url: 'https://matic-mumbai.chainstacklabs.com',
+    url: `https://polygon-mumbai.g.alchemy.com/v2/${ALCHEMY_KEY}`,
     faucet: 'https://faucet.matic.network',
     blockExplorer: 'https://mumbai.polygonscan.com/',
   },

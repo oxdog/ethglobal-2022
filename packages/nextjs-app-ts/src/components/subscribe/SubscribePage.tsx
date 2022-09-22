@@ -111,7 +111,7 @@ export const SubscribePage: FC<SubscribePageProps> = ({ subInfo }) => {
       </div>
       <div className="self-end mr-2 font-semibold text-gray-400">
         <a
-          href={`https://goerli.etherscan.io/address/${subInfo?.address}`}
+          href={`https://mumbai.polygonscan.com/address/${subInfo?.address}`}
           target="_blank"
           rel="noreferrer"
           className="no-underline text-gray-400 hover:text-gray-400 tracking-wider cursor-pointer">

@@ -115,8 +115,8 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
       }
 
       const jwt = (await client.getSignedToken({
-        evmContractConditions: generateEvmContractConditions(sub.address, 'goerli', 0),
-        chain: 'goerli',
+        evmContractConditions: generateEvmContractConditions(sub.address, 'mumbai', 0),
+        chain: 'mumbai',
         authSig,
         resourceId: resourceId,
       })) as string
@@ -177,7 +177,7 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
     <div className="group relative w-72 flex-none h-full flex flex-col items-center justify-start bg-gray-50 pt-16 pb-8 px-4 rounded-xl shadow-md overflow-hidden">
       <div className="absolute -top-4 text-9xl transform scale-[3] -rotate-12 opacity-10 pointer-events-none">🥪</div>
       <a
-        href={`https://goerli.etherscan.io/address/${sub.address}`}
+        href={`https://mumbai.polygonscan.com/address/${sub.address}`}
         target="_blank"
         className="absolute top-2 left-4 text-gray-400 hover:text-gray-800 tracking-wider cursor-pointer"
         rel="noreferrer">

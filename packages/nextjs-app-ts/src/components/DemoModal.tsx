@@ -108,8 +108,8 @@ export const DemoModal: React.FC<DemoModalProps> = ({ open, setOpen, scaffoldApp
         <div className="space-y-8">
           <div className="space-y-4">
             <div>
-              First you need to be connected to Polygon Testnet Mumbai. This is where the contracts of the demo are
-              deployed.
+              Next switch your network to Polygon Testnet Mumbai (aka Maticmum). This is where the contracts of the demo
+              are deployed.
             </div>
             <div>Here is the network information:</div>
           </div>
@@ -190,7 +190,7 @@ export const DemoModal: React.FC<DemoModalProps> = ({ open, setOpen, scaffoldApp
         <div className="text-gray-300">
           <div>Here is the address to add the token to your wallet if you want:</div>
           <a
-            href={`https://goerli.etherscan.io/address/${SUPERTOKEN_ADDRESS}`}
+            href={`https://mumbai.polygonscan.io/address/${SUPERTOKEN_ADDRESS}`}
             target="_blank"
             rel="noreferrer"
             className="no-underline text-gray-300 hover:text-gray-400 tracking-wider cursor-pointer">

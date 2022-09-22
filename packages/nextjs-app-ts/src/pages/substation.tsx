@@ -39,7 +39,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
 
   try {
     if (sub && ethers.utils.isAddress(sub)) {
-      const provider = new ethers.providers.AlchemyProvider('goerli', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
+      const provider = new ethers.providers.AlchemyProvider('maticmum', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
       const SSA = new ethers.Contract(sub, SSAJson.abi, provider) as Subscription_SuperApp
       const generalInfo = await SSA.generalInfo()
 

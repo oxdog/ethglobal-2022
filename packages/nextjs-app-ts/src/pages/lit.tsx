@@ -109,7 +109,7 @@ const Page: FC = ({}) => {
   useLoadUserOnWalletConnect()
   useClearCookiesOnDisconnect()
 
-  const chain = 'goerli'
+  const chain = 'mumbai'
   const evmContractConditions = generateEvmContractConditions(SSAJson.address, chain, 0)
 
   const context = useEthersAppContext()

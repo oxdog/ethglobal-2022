@@ -30,7 +30,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 </div>
                 <div className="mr-2 font-semibold text-gray-400">
                   <a
-                    href={`https://goerli.etherscan.io/address/${oxdogStation.address}`}
+                    href={`https://mumbai.polygonscan.com/address/${oxdogStation.address}`}
                     target="_blank"
                     rel="noreferrer"
                     className="no-underline text-gray-400 hover:text-gray-400 tracking-wider cursor-pointer">
@@ -61,7 +61,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 <div className="text-5xl uppercase tracking-widest font-bold text-gray-800">Station</div>
                 <div className="mr-2 font-semibold text-gray-400">
                   <a
-                    href={`https://goerli.etherscan.io/address/${breadStation.address}`}
+                    href={`https://mumbai.polygonscan.com/address/${breadStation.address}`}
                     target="_blank"
                     rel="noreferrer"
                     className="no-underline text-gray-400 hover:text-gray-400 tracking-wider cursor-pointer">
@@ -96,7 +96,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 </div>
                 <div className="mr-2 font-semibold text-gray-400">
                   <a
-                    href={`https://goerli.etherscan.io/address/${mevStation.address}`}
+                    href={`https://mumbai.polygonscan.com/address/${mevStation.address}`}
                     target="_blank"
                     rel="noreferrer"
                     className="no-underline text-gray-400 hover:text-gray-400 tracking-wider cursor-pointer">
