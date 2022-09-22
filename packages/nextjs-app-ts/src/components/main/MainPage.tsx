@@ -14,7 +14,6 @@ import { useLoadAppContracts, useConnectAppContracts, useAppContracts } from '~c
 import { useCreateAntNotificationHolder } from '~common/components/hooks/useAntNotification'
 import { useBurnerFallback } from '~common/components/hooks/useBurnerFallback'
 import { useScaffoldAppProviders } from '~common/components/hooks/useScaffoldAppProviders'
-import { NETWORKS } from '~common/constants'
 import {
   BURNER_FALLBACK_ENABLED,
   CONNECT_TO_BURNER_AUTOMATICALLY,
@@ -90,7 +89,8 @@ export const MainPage: FC<IMainPageProps> = (props) => {
 
   // init contracts
   const Subscription_SuperApp = useAppContracts('SSA', ethersAppContext.chainId)
-  const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId)
+  const TokenFaucet = useAppContracts('TokenFaucet', ethersAppContext.chainId)
+  // const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId)
 
   // keep track of a variable from the contract in the local React state:
   // const [purpose, update] = useContractReader(
@@ -115,7 +115,7 @@ export const MainPage: FC<IMainPageProps> = (props) => {
   // 💰 this hook will get your balance
   const [yourCurrentBalance] = useBalance(ethersAppContext.account)
 
-  // -----------------------------
+  // -----------------------------T
   // 📃 App Page List
   // -----------------------------
   // This is the list of tabs and their contents
@@ -133,11 +133,11 @@ export const MainPage: FC<IMainPageProps> = (props) => {
     },
     pages: [
       {
-        name: 'Mainnet-Dai',
+        name: 'TokenFaucet',
         content: (
           <GenericContract
-            contractName="Dai"
-            contract={mainnetDai}
+            contractName="TokenFaucet"
+            contract={TokenFaucet}
             mainnetAdaptor={scaffoldAppProviders.mainnetAdaptor}
             blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
           />

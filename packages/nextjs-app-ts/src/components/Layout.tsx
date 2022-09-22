@@ -1,4 +1,3 @@
-/* This example requires Tailwind CSS v2.0+ */
 import { getNetwork } from '@ethersproject/networks'
 import { Dialog, Transition } from '@headlessui/react'
 import { Bars3Icon, ChartBarIcon, HomeIcon } from '@heroicons/react/24/outline'
@@ -207,7 +206,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                       ensProvider={scaffoldAppProviders.mainnetAdaptor?.provider}
                       blockExplorer={scaffoldAppProviders.targetNetwork.blockExplorer}
                       hasContextConnect={true}
-                      price={0}
                     />
                   </div>
                 </Dialog.Panel>
@@ -294,7 +292,12 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
       <div className="absolute">{notificationHolder}</div>
 
-      <DemoModal scaffoldAppProviders={scaffoldAppProviders} open={openDemo} setOpen={setOpenDemo} />
+      <DemoModal
+        onLoginError={onLoginError}
+        scaffoldAppProviders={scaffoldAppProviders}
+        open={openDemo}
+        setOpen={setOpenDemo}
+      />
 
       {networkDisplay}
     </>

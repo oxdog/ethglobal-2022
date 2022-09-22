@@ -135,7 +135,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 <div className="bg-white shadow">Substation</div>
               </div>
 
-              <div className="text-xl py-2 px-4 cursor-pointer ring-2 ring-gray-400 bg-gray-50 rounded-full w-min whitespace-nowrap uppercase tracking-widest font-bold text-gray-600">
+              <div className="text-xl select-none py-2 px-4 ring-2 ring-gray-400 bg-gray-50 rounded-full w-min whitespace-nowrap uppercase tracking-widest font-bold text-gray-600">
                 not available yet
               </div>
             </div>

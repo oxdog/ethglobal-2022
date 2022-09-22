@@ -31,11 +31,17 @@ export const getAppContractsConfig = () => {
         hardhatContracts.Subscription_SuperApp__factory,
         hardhatDeployedContractsJson
       ),
+      TokenFaucet: createConnectorForHardhatContract(
+        'TokenFaucet',
+
+        hardhatContracts.TokenFaucet__factory,
+        hardhatDeployedContractsJson
+      ),
 
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your external contracts here, make sure to define the address in `externalContractsConfig.ts`Í
       // --------------------------------------------------
-      DAI: createConnectorForExternalContract('DAI', externalContracts.DAI__factory, externalContractsAddressMap),
+      fDAIx: createConnectorForExternalContract('DAI', externalContracts.DAI__factory, externalContractsAddressMap),
 
       // --------------------------------------------------
       // 🙋🏽‍♂️ Add your external abi here (unverified contracts)`

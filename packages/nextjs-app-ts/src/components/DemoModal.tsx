@@ -1,11 +1,14 @@
-/* This example requires Tailwind CSS v2.0+ */
 import { Dialog, Transition } from '@headlessui/react'
+import { useEthersAdaptorFromProviderOrSigners } from 'eth-hooks'
 import { useEthersAppContext } from 'eth-hooks/context'
+import { asEthersAdaptor } from 'eth-hooks/functions'
 import Cookies from 'js-cookie'
 import React, { Dispatch, Fragment, SetStateAction, useEffect, useState } from 'react'
+import { AiOutlineLoading } from 'react-icons/ai'
 import { IoIosCheckmark } from 'react-icons/io'
+import { useAppContracts, useConnectAppContracts, useLoadAppContracts } from '~common/components/context'
 import { IScaffoldAppProviders } from '~common/models'
-import { SUPERTOKEN_ADDRESS } from '~~/helpers/constants'
+import { MAINNET_PROVIDER } from '~~/config/app.config'
 import { Account } from './Account'
 
 interface DemoModalProps {
@@ -16,14 +19,35 @@ interface DemoModalProps {
 }
 
 export const DemoModal: React.FC<DemoModalProps> = ({ open, setOpen, scaffoldAppProviders, onLoginError }) => {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0)
+  const [claiming, setClaiming] = useState(false)
+  const [elligible, setElligible] = useState(true)
+
+  useLoadAppContracts()
   const context = useEthersAppContext()
+  const [mainnetAdaptor] = useEthersAdaptorFromProviderOrSigners(MAINNET_PROVIDER)
+  useConnectAppContracts(mainnetAdaptor)
+  useConnectAppContracts(asEthersAdaptor(context))
+
+  const tokenFaucet = useAppContracts('TokenFaucet', context.chainId)
 
   useEffect(() => {
     if (step >= 6) {
       setStep(0)
     }
-  }, [step])
+
+    if (step === 3) {
+      const loadElligible = async () => {
+        console.log('loading ell')
+        if (tokenFaucet && context?.account) {
+          const ell = await tokenFaucet.elligible(context.account)
+          setElligible(ell)
+        }
+      }
+
+      void loadElligible()
+    }
+  }, [context.account, step, tokenFaucet])
 
   useEffect(() => {
     if (open) {
@@ -34,6 +58,36 @@ export const DemoModal: React.FC<DemoModalProps> = ({ open, setOpen, scaffoldApp
   const finish = () => {
     Cookies.set('demoModal', 'true')
     setOpen(false)
+  }
+
+  const claimToken = async () => {
+    try {
+      if (!tokenFaucet || !context?.account) {
+        throw new Error('No TokenFaucet Contract')
+      }
+
+      setClaiming(true)
+
+      console.log('context.account', context.account)
+      console.log(tokenFaucet.address)
+
+      const canClaim = await tokenFaucet.elligible(context.account)
+      console.log('canClaim', canClaim)
+
+      if (!canClaim) {
+        setElligible(false)
+        throw new Error('Not elligible')
+      }
+
+      const tx = await tokenFaucet.claim()
+      await tx.wait()
+
+      setElligible(false)
+    } catch (e) {
+      console.error('error', e)
+    } finally {
+      setClaiming(false)
+    }
   }
 
   const Welcome = () => (
@@ -175,28 +229,36 @@ export const DemoModal: React.FC<DemoModalProps> = ({ open, setOpen, scaffoldApp
 
   const drawStepTokenFaucet = () => (
     <div className="flex flex-col items-center text-center space-y-12 pt-8 w-full bg-white bg-opacity-50 text-lg text-gray-800">
-      <div className="space-y-8">
+      <div className="flex flex-col items-center space-y-8">
         <div className="space-y-4">
           <div>To create Supersubs you will need some token. You can claim them here.</div>
 
           <button
             type="button"
-            className="inline-flex w-min whitespace-nowrap text-2xl justify-center rounded-md cursor-pointer border border-transparent bg-green-400 px-8 py-2 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-            onClick={() => setStep(step - 1)}>
-            Claim Token
+            disabled={claiming || !elligible}
+            className={`${
+              elligible || claiming ? ' bg-green-400 hover:bg-green-500' : ' bg-gray-400 hover:bg-gray-500'
+            } inline-flex items-center w-min whitespace-nowrap text-2xl justify-center rounded-md cursor-pointer border border-transparent px-8 py-2 font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2
+            `}
+            onClick={claimToken}>
+            {claiming ? (
+              <>
+                <AiOutlineLoading className="w-6 h-6 mr-4 animate-spin" />
+                <div>Claiming ...</div>
+              </>
+            ) : (
+              <>
+                <div>Claim Token</div>
+              </>
+            )}
           </button>
         </div>
-
-        <div className="text-gray-300">
-          <div>Here is the address to add the token to your wallet if you want:</div>
-          <a
-            href={`https://mumbai.polygonscan.io/address/${SUPERTOKEN_ADDRESS}`}
-            target="_blank"
-            rel="noreferrer"
-            className="no-underline text-gray-300 hover:text-gray-400 tracking-wider cursor-pointer">
-            {SUPERTOKEN_ADDRESS}
-          </a>
-        </div>
+        {!elligible && (
+          <div className="flex items-center">
+            <IoIosCheckmark className="text-green-400 text-3xl" />
+            <div className="text-gray-500">Success! Your wallet owns enough tokens for the demo</div>
+          </div>
+        )}
       </div>
 
       <PrevNextButtons />

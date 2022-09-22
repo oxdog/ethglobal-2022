@@ -5,8 +5,6 @@ export const SSAJson = hardhatDeployedContractsJson[5][0].contracts.Subscription
   abi: []
 }
 
-export const SUPERTOKEN_ADDRESS = '0x0000000000000000000000000000000000000000'
-
 export const oxdogStation = {
   address: '0xBCa2081845Bb4cc52FeAC84f38B4A5Ef41B1C0e5',
   emoji: '🥪',
