@@ -7,7 +7,7 @@ import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 import { AiOutlineLoading } from 'react-icons/ai'
 import { IoMdCheckmark } from 'react-icons/io'
-import { EMOJIS } from '~~/helpers/constants'
+import { EMOJIS, FLOW_RATES } from '~~/helpers/constants'
 import { SubInfo } from '~~/pages/subscribe'
 import { useAppSelector } from '~~/redux/hooks'
 
@@ -21,6 +21,7 @@ export const SubscribePage: FC<SubscribePageProps> = ({ subInfo }) => {
   const [txMessage, setTxMessage] = useState<string>('')
   const [subscribing, setSubscribing] = useState<boolean>(false)
   const [success, setSuccess] = useState<boolean>(false)
+  const [selectedRate, setSelectedRate] = useState(0)
 
   const loading = useAppSelector((state) => state.subs.loading)
   const subMatch = useAppSelector((state) =>
@@ -36,7 +37,7 @@ export const SubscribePage: FC<SubscribePageProps> = ({ subInfo }) => {
 
     try {
       const sf = await Framework.create({
-        chainId: 5,
+        chainId: 80001,
         provider: context.provider,
       })
 
@@ -107,7 +108,7 @@ export const SubscribePage: FC<SubscribePageProps> = ({ subInfo }) => {
       <div className="text-5xl uppercase tracking-widest font-bold bg-white bg-opacity-50 text-gray-800">Subscribe</div>
       <div className="flex items-start space-x-4">
         <div className="text-2xl mt-2 uppercase tracking-widest font-bold text-gray-800 bg-white bg-opacity-50">to</div>
-        <div className="text-7xl uppercase tracking-widest font-bold text-gray-800">{subInfo?.name}</div>
+        <div className="text-7xl uppercase tracking-widest font-bold text-gray-800 w-min">{subInfo?.name}</div>
       </div>
       <div className="self-end mr-2 font-semibold text-gray-400">
         <a
@@ -130,8 +131,32 @@ export const SubscribePage: FC<SubscribePageProps> = ({ subInfo }) => {
       <div className="self-end w-72 h-12 rounded-lg ring border-green-400"></div>
     </div> */}
 
+          {subMatch.length === 0 && !success && (
+            <div className="flex overflow-hidden items-center rounded-2xl shadow-sm ring-2 ring-green-500">
+              {FLOW_RATES[subInfo.address].map((flowRate, i) => (
+                <>
+                  <button
+                    key={flowRate.value}
+                    onClick={() => setSelectedRate(i)}
+                    className={`${
+                      selectedRate === i
+                        ? 'bg-green-500 text-gray-50'
+                        : 'text-opacity-50 text-gray-500 bg-white hover:bg-gray-50'
+                    } flex flex-col items-center cursor-pointer px-2 border transition-colors  border-transparent shadow-sm`}>
+                    <div className="text-xl font-bold">{flowRate.rate}</div>
+                    <div className="text-base font-medium">DAI/Month</div>
+                  </button>
+
+                  {/* {i < FLOW_RATES[subInfo.address].length - 1 && (
+                  <div className="h-10 w-0.5 bg-green-400 bg-opacity-50" />
+                )} */}
+                </>
+              ))}
+            </div>
+          )}
+
           <button
-            onClick={() => createFlow(subInfo.address, '58273944574335')}
+            onClick={() => createFlow(subInfo.address, FLOW_RATES[subInfo.address][selectedRate].value)}
             disabled={subscribing || subMatch.length > 0}
             type="button"
             className={

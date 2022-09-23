@@ -97,11 +97,11 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
   const [decryptedPosts, setDecryptedPosts] = useState<Record<string, Array<Post>>>({})
   const [selectedTier, setSelectedTier] = useState<number>(0)
   const [inDecoding, setInDecoding] = useState<number>(-1)
+  const [noAccess, setNoAccess] = useState<number>(-1)
 
   useEffect(() => console.log('subscription', sub), [sub])
 
   const chain = 'mumbai'
-  const evmContractConditions = generateEvmContractConditions(SSAJson.address, chain, 0)
 
   const client = useLitClient()
   const context = useEthersAppContext()
@@ -118,6 +118,7 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
 
     try {
       setInDecoding(tierId)
+      setNoAccess(-1)
 
       const msg = getSigningMsg(context.account!, context.chainId!)
       const sig = await context.signer?.signMessage(msg)
@@ -131,6 +132,8 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
       const enData = tierData[tierId]
 
       const { encryptedString, encryptedSymmetricKey } = enData
+
+      const evmContractConditions = generateEvmContractConditions(sub!.address, chain, tierId)
 
       console.log('evmContractConditions', evmContractConditions)
 
@@ -154,6 +157,7 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
       })
     } catch (e) {
       console.error('error', e)
+      setNoAccess(tierId)
     } finally {
       setInDecoding(-1)
     }
@@ -200,7 +204,7 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
         }>
         {inDecoding === tierId ? (
           <>
-            <AiOutlineLoading className="w-6 h-6 mr-2 animate-spin" /> <div>Unlocking...</div>
+            <AiOutlineLoading className="w-6 h-6 mr-4 animate-spin" /> <div>Unlocking...</div>
           </>
         ) : (
           <>
@@ -208,6 +212,13 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
           </>
         )}
       </button>
+
+      {noAccess === tierId && (
+        <div className="text-lg text-gray-400 text-center tracking-wider font-bold">
+          <div>Your Supersub is not a high enough Tier to access this content.</div>
+          <div>Go to Home to see when you reach the next tier.</div>
+        </div>
+      )}
     </div>
   )
   return (

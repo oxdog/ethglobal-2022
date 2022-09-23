@@ -6,19 +6,18 @@ import { Framework } from '@superfluid-finance/sdk-core'
 import { ethers } from 'ethers'
 import _ from 'lodash'
 import { Subscription_SuperApp } from '~common/generated/contract-types'
-import { SSAJson } from '~~/helpers/constants'
+import { oxdogStation, SSAJson } from '~~/helpers/constants'
 import Head from 'next/head'
 import { Layout } from '~~/components/Layout'
 
 export const getServerSideProps: GetServerSideProps = async ({}) => {
-  console.log('\n\n\ngetServerSideProps')
   const provider = new ethers.providers.AlchemyProvider('maticmum', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
-  const SSA = new ethers.Contract(SSAJson.address, SSAJson.abi, provider) as Subscription_SuperApp
+  const SSA = new ethers.Contract(oxdogStation.address, SSAJson.abi, provider) as Subscription_SuperApp
 
   const generalInfo = await SSA.generalInfo()
 
   const sf = await Framework.create({
-    chainId: 5,
+    chainId: 80001,
     provider,
   })
   const DAIxContract = await sf.loadSuperToken('fDAIx')

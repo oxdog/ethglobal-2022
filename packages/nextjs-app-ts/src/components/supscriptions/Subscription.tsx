@@ -9,7 +9,7 @@ import { useRouter } from 'next/router'
 import React, { Fragment, useState } from 'react'
 import { AiOutlineLoading } from 'react-icons/ai'
 import { BsArrowRepeat, BsPauseFill, BsThreeDotsVertical } from 'react-icons/bs'
-import { SSAJson } from '~~/helpers/constants'
+import { EMOJIS, FLOW_RATES, SSAJson } from '~~/helpers/constants'
 import { generateEvmContractConditions } from '~~/helpers/generateEvmContractConditions'
 import { getJWTResourceId } from '~~/helpers/getJWTResourceId'
 import { getSigningMsg } from '~~/helpers/getSigningMsg'
@@ -30,9 +30,11 @@ interface SubscriptionProps {
 }
 
 export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }) => {
-  const [txMessage, setTxMessage] = useState<string>('')
+  // const [txMessage, setTxMessage] = useState<string>('')
   const [unlocking, setUnlocking] = useState<boolean>(false)
   const [pausing, setPausing] = useState<boolean>(false)
+
+  const monthlyDAI = FLOW_RATES[sub.address].find((flowRate) => flowRate.value === sub.flowRate)?.rate || '?'
 
   const client = useLitClient()
   const context = useEthersAppContext()
@@ -43,7 +45,7 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
     try {
       setPausing(true)
       const sf = await Framework.create({
-        chainId: 5,
+        chainId: 80001,
         provider: context.provider,
       })
 
@@ -61,33 +63,33 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
 
       const recipe = await context.provider?.waitForTransaction(result.hash)
       if (recipe?.status === 0) {
-        setTxMessage('❌🥪 Failed!')
+        // setTxMessage('❌🥪 Failed!')
       } else {
-        setTxMessage('✅🥪 Paused!')
+        // setTxMessage('✅🥪 Paused!')
         dispatch(pauseSub({ address: sub.address, balance: sub.passBalance }))
-        setTimeout(function () {
-          setTxMessage('')
-        }, 4000)
+        // setTimeout(function () {
+        //   setTxMessage('')
+        // }, 4000)
       }
 
-      setTimeout(function () {
-        setTxMessage('')
-      }, 4000)
+      // setTimeout(function () {
+      //   setTxMessage('')
+      // }, 4000)
     } catch (error: any) {
       console.log(
         "Hmmm, your transaction threw an error. Make sure that this stream does not already exist, and that you've entered a valid Ethereum address!"
       )
       console.error(error)
 
-      if (error.code === 4001) {
-        setTxMessage('❌🥪 Cancelled')
-      } else {
-        setTxMessage('An error occured')
-      }
+      // if (error.code === 4001) {
+      //   setTxMessage('❌🥪 Cancelled')
+      // } else {
+      //   setTxMessage('An error occured')
+      // }
 
-      setTimeout(function () {
-        setTxMessage('')
-      }, 4000)
+      // setTimeout(function () {
+      //   setTxMessage('')
+      // }, 4000)
     } finally {
       setPausing(false)
     }
@@ -103,8 +105,10 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
       console.log('no client')
       return
     }
+
     try {
       setUnlocking(true)
+
       const msg = getSigningMsg(context.account!, context.chainId!)
       const sig = await context.signer?.signMessage(msg)
       const authSig = {
@@ -121,6 +125,7 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
         resourceId: resourceId,
       })) as string
       Cookies.set('lit-auth', jwt, { expires: 1 })
+
       await router.push(`/substation?sub=${sub.address}`)
     } catch (err: any) {
       setUnlocking(false)
@@ -146,8 +151,9 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
         )}
       </button>
 
-      <div className="flex flex-col items-start space-y-2 ml-8 cursor-default select-none">
-        <div className="font-semibold tracking-widest">DAI Until next Tier</div>
+      <div className="flex flex-col items-start space-y-1 ml-8 cursor-default select-none">
+        <div className="font-semibold tracking-widest text-gray-300">{monthlyDAI} DAI per month</div>
+        <div className="font-semibold tracking-widest">DAI Until next Tier:</div>
         <div className="relative text-2xl w-72 text-left tracking-widest font-semibold text-green-400">
           <FlowingBalance
             balance={sub.toNextTier}
@@ -175,7 +181,9 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
 
   return (
     <div className="group relative w-72 flex-none h-full flex flex-col items-center justify-start bg-gray-50 pt-16 pb-8 px-4 rounded-xl shadow-md overflow-hidden">
-      <div className="absolute -top-4 text-9xl transform scale-[3] -rotate-12 opacity-10 pointer-events-none">🥪</div>
+      <div className="absolute -top-4 text-9xl transform scale-[3] -rotate-12 opacity-10 pointer-events-none">
+        {EMOJIS[sub.address]}
+      </div>
       <a
         href={`https://mumbai.polygonscan.com/address/${sub.address}`}
         target="_blank"
@@ -191,7 +199,7 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
               <Popover.Button
                 className={classNames(
                   open ? 'text-gray-900' : 'text-gray-500',
-                  'relative flex items-center justify-center w-10 h-10 rounded-full bg-white bg-opacity-25 border-0 hover:text-gray-900 focus:outline-none'
+                  'relative flex items-center cursor-pointer justify-center w-10 h-10 rounded-full bg-white bg-opacity-25 border-0 hover:text-gray-900 focus:outline-none'
                 )}>
                 <BsThreeDotsVertical
                   className={classNames(open ? 'text-gray-600' : 'text-gray-400', 'h-6 w-6 group-hover:text-gray-500')}
@@ -236,13 +244,13 @@ export const Subscription: React.FC<SubscriptionProps> = ({ subscriptions: sub }
       )}
 
       <div className="flex flex-col items-center space-y-16 cursor- select-none z-10">
-        <div className="text-3xl text-center uppercase tracking-widest font-bold">
+        <div className="text-3xl text-center w-min uppercase tracking-widest font-bold">
           <ClipString maxLength={15} text={sub.name} />
         </div>
         <div className="flex flex-col items-center space-y-2">
           <div className="tracking-widest font-bold text-gray-600">Tier</div>
           <div className="text-5xl relative uppercase font-bold bg-white rounded-full h-24 w-24 flex items-center justify-center pb-1 shadow-md shadow-green-400">
-            {sub.tier === sub.availableTiers.length - 1 ? <div className="text-green-400">MAX</div> : sub.tier}
+            {sub.tier === sub.availableTiers.length - 1 ? <div className="text-green-400">MAX</div> : sub.tier + 1}
           </div>
         </div>
       </div>

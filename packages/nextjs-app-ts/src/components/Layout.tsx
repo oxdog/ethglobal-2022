@@ -299,6 +299,13 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         setOpen={setOpenDemo}
       />
 
+      <Link href="/hireme">
+        <div className="fixed inset-x-0 bottom-2 flex justify-center space-x-1 cursor-pointer transition-colors text-gray-400 hover:text-gray-800">
+          <div>🙌 The developer who created Supersub is for hire</div>
+          <div className="underline">show more</div>
+        </div>
+      </Link>
+
       {networkDisplay}
     </>
   )

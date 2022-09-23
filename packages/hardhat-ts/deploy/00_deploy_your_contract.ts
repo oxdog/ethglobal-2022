@@ -12,6 +12,7 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
   const DAIX = '0x5D8B4C2554aeB7e86F387B4d6c00Ac33499Ed01f'
 
   // OXDOG STATION
+  console.log('OXDOG STATION')
   await deploy('Subscription_SuperApp', {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
@@ -21,6 +22,7 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
   })
 
   // BREAD STATION
+  console.log('BREAD STATION')
   await deploy('Subscription_SuperApp', {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
@@ -30,6 +32,7 @@ const func: DeployFunction = async (hre: THardhatRuntimeEnvironmentExtended) => 
   })
 
   // MEV STATION
+  console.log('MEV STATION')
   await deploy('Subscription_SuperApp', {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,

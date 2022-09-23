@@ -4,7 +4,6 @@ import { EthComponentsSettingsContext } from 'eth-components/models'
 import {
   useBalance,
   useBlockNumber,
-  useContractReader,
   useEthersAdaptorFromProviderOrSigners,
   useGasPrice,
   useSignerAddress,
@@ -14,8 +13,6 @@ import { mergeDefaultUpdateOptions } from 'eth-hooks/functions'
 import { ethers } from 'ethers'
 import { useContext, useEffect } from 'react'
 
-import { useAppContracts } from '~common/components/context'
-import { NETWORKS } from '~common/constants'
 import { getNetworkInfo } from '~common/functions'
 import { IScaffoldAppProviders } from '~common/models/IScaffoldAppProviders'
 
@@ -33,7 +30,7 @@ const DEBUG = false
 export const useScaffoldHooksExamples = (scaffoldAppProviders: IScaffoldAppProviders): void => {
   const ethComponentsSettings = useContext(EthComponentsSettingsContext)
   const ethersAppContext = useEthersAppContext()
-  const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId)
+  // const mainnetDai = useAppContracts('DAI', NETWORKS.mainnet.chainId)
 
   const exampleMainnetProvider = scaffoldAppProviders.mainnetAdaptor?.provider
   const currentChainId: number | undefined = ethersAppContext.chainId
@@ -70,7 +67,7 @@ export const useScaffoldHooksExamples = (scaffoldAppProviders: IScaffoldAppProvi
 
   // 💰 Then read your DAI balance like:
   const [myAddress] = useSignerAddress(ethersAppContext.signer)
-  const myMainnetDAIBalance = useContractReader(mainnetDai, mainnetDai?.balanceOf, [myAddress ?? ''])
+  // const myMainnetDAIBalance = useContractReader(mainnetDai, mainnetDai?.balanceOf, [myAddress ?? ''])
 
   // 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation
   const [gasPrice] = useGasPrice(ethersAppContext.chainId, 'fast', getNetworkInfo(ethersAppContext.chainId))
@@ -136,8 +133,8 @@ export const useScaffoldHooksExamples = (scaffoldAppProviders: IScaffoldAppProvi
       console.log('🕵🏻‍♂️ currentChainId:', currentChainId)
       console.log('💵 yourLocalBalance', yourLocalBalance ? ethers.utils.formatEther(yourLocalBalance) : '...')
       // console.log('💵 yourMainnetBalance', yourMainnetBalance ? ethers.utils.formatEther(yourMainnetBalance) : '...');
-      console.log('🌍 DAI contract on mainnet:', mainnetDai)
-      console.log('💵 yourMainnetDAIBalance', myMainnetDAIBalance ?? '...')
+      // console.log('🌍 DAI contract on mainnet:', mainnetDai)
+      // console.log('💵 yourMainnetDAIBalance', myMainnetDAIBalance ?? '...')
       console.log('⛽ gasPrice', gasPrice)
     }
   }, [
@@ -147,8 +144,8 @@ export const useScaffoldHooksExamples = (scaffoldAppProviders: IScaffoldAppProvi
     scaffoldAppProviders?.localAdaptor?.chainId,
     currentChainId,
     yourLocalBalance,
-    mainnetDai,
-    myMainnetDAIBalance,
+    // mainnetDai,
+    // myMainnetDAIBalance,
     gasPrice,
   ])
 }

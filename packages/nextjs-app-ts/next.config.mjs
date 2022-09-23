@@ -1,5 +1,5 @@
-import { resolve } from 'path';
-const __dirname = resolve();
+import { resolve } from 'path'
+const __dirname = resolve()
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -22,9 +22,16 @@ const nextConfig = {
       react: resolve(__dirname, './node_modules/react'),
       'react-dom': resolve(__dirname, './node_modules/react-dom'),
       // -------------------------------------------
-    };
-    return config;
+    }
+    return config
   },
-};
+  // typescript: {
+  //   // !! WARN !!
+  //   // Dangerously allow production builds to successfully complete even if
+  //   // your project has type errors.
+  //   // !! WARN !!
+  //   ignoreBuildErrors: true,
+  // },
+}
 
-export default nextConfig;
+export default nextConfig

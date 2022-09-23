@@ -345,6 +345,8 @@ contract Subscription_SuperApp is SuperAppBase, ERC721, ERC721Enumerable, Ownabl
   function airdropPass(uint256 _startBalance, address _receiver) external {
     require(balanceOf(_receiver) == 0, "SSA: Receiver already owns a pass");
     _issuePass(_receiver);
-    TTV[activePass[_receiver]] = _startBalance;
+    uint256 passId = activePass[_receiver];
+    TTV[passId] = _startBalance;
+    passState[passId] = false;
   }
 }

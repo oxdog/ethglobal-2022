@@ -7,7 +7,7 @@ import { Layout } from '~~/components/Layout'
 import { SubscribePage } from '~~/components/subscribe/SubscribePage'
 import { SSAJson, SUBSTATION_WHITELIST } from '~~/helpers/constants'
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const sub = query.sub as string
   let subInfo = {
     name: '',

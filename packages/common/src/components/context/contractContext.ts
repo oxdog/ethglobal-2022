@@ -23,4 +23,5 @@ export type TAppConnectorList = NonNullable<ReturnType<typeof getAppContractsCon
  * - The type is your contract connect config.
  */
 export const { useAppContracts, useLoadAppContracts, useConnectAppContracts, useContractsAppStore } =
+  // @ts-expect-error
   contractsContextFactory<keyof TAppConnectorList, TAppConnectorList>(getAppContractsConfig);

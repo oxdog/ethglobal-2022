@@ -1,17 +1,25 @@
 import { SignalIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 import { breadStation, mevStation, oxdogStation } from '~~/helpers/constants'
+import { useAppSelector } from '~~/redux/hooks'
+import { AirdropModal } from '../AirdropModal'
 import { ShortAddress } from '../ShortAddress'
 
 interface ExplorePageProps {}
 
 export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
+  const [openAirdrop, setAidropModal] = useState(false)
+
+  const subMatch = useAppSelector((state) => state.subs.subscriptions.filter((s) => s.address === mevStation.address))
+
   return (
     <>
       <div className="max-w-7xl px-8 space-y-2 pb-12">
         <div className="text-2xl font-semibold text-gray-900">Explore available Substations</div>
       </div>
+
+      <AirdropModal open={openAirdrop} setOpen={setAidropModal} />
 
       <div className="flex flex-col items-center px-8">
         <div className="flex flex-wrap gap-8">
@@ -39,7 +47,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 </div>
               </div>
 
-              <Link href={`/subscribe?sub=${oxdogStation.address}&reactivate=true`}>
+              <Link href={`/subscribe?sub=${oxdogStation.address}`}>
                 <div
                   className={
                     'inline-flex relative items-center text-lg w-min cursor-pointer px-6 py-3 border transition-colors border-transparent font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
@@ -70,7 +78,7 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 </div>
               </div>
 
-              <Link href={`/subscribe?sub=${breadStation.address}&reactivate=true`}>
+              <Link href={`/subscribe?sub=${breadStation.address}`}>
                 <div
                   className={
                     'inline-flex relative items-center text-lg w-min cursor-pointer px-6 py-3 border transition-colors border-transparent font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
@@ -105,14 +113,25 @@ export const ExplorePage: React.FC<ExplorePageProps> = ({}) => {
                 </div>
               </div>
 
-              <Link href={`/subscribe?sub=${mevStation.address}&reactivate=true`}>
-                <div
+              {subMatch.length > 0 ? (
+                // Owns Mev Station Supersub
+                <Link href={`/subscribe?sub=${mevStation.address}`}>
+                  <div
+                    className={
+                      'inline-flex relative items-center text-lg w-min cursor-pointer px-6 py-3 border transition-colors border-transparent font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
+                    }>
+                    <SignalIcon className="w-8 h-8 mr-2 mt-0.5" /> <div>Subscribe</div>
+                  </div>
+                </Link>
+              ) : (
+                <button
+                  onClick={() => setAidropModal(true)}
                   className={
                     'inline-flex relative items-center text-lg w-min cursor-pointer px-6 py-3 border transition-colors border-transparent font-medium rounded-full shadow-sm text-white bg-green-500 hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
                   }>
                   <SignalIcon className="w-8 h-8 mr-2 mt-0.5" /> <div>Subscribe</div>
-                </div>
-              </Link>
+                </button>
+              )}
             </div>
           </div>
 

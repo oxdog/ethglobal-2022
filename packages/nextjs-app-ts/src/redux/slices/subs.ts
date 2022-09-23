@@ -4,7 +4,7 @@ import { BigNumber, ethers } from 'ethers'
 import _ from 'lodash'
 
 import { Subscription_SuperApp } from '~common/generated/contract-types'
-import { SSAJson } from '~~/helpers/constants'
+import { breadStation, mevStation, oxdogStation, SSAJson } from '~~/helpers/constants'
 
 export type TSubscription = {
   name: string
@@ -33,31 +33,38 @@ const initialState: SubState = {
 }
 
 const provider = new ethers.providers.AlchemyProvider('maticmum', process.env.NEXT_PUBLIC_KEY_ALCHEMY)
-const SSA = new ethers.Contract(SSAJson.address, SSAJson.abi, provider) as Subscription_SuperApp
+const OXDOG_SSA = new ethers.Contract(oxdogStation.address, SSAJson.abi, provider) as Subscription_SuperApp
+const BREAD_SSA = new ethers.Contract(breadStation.address, SSAJson.abi, provider) as Subscription_SuperApp
+const MEV_SSA = new ethers.Contract(mevStation.address, SSAJson.abi, provider) as Subscription_SuperApp
 
 const initSubscriptions = createAsyncThunk('sub/initSubs', async (account: string, _thunkAPI) => {
   try {
-    const generalInfo = await SSA.generalInfo()
-    const balance = (await SSA.balanceOf(account)).toNumber()
-    const tokenIdPromises = Array(balance)
-      .fill('X')
-      .map((_, i) => SSA.tokenOfOwnerByIndex(account, i))
-    const tokenIds = (await Promise.all(tokenIdPromises)).map((bn: BigNumber) => bn.toNumber())
+    const loadSSA = async (SSA: Subscription_SuperApp) => {
+      const generalInfo = await SSA.generalInfo()
+      const balance = (await SSA.balanceOf(account)).toNumber()
+      const tokenIdPromises = Array(balance)
+        .fill('X')
+        .map((_, i) => SSA.tokenOfOwnerByIndex(account, i))
+      const tokenIds = (await Promise.all(tokenIdPromises)).map((bn: BigNumber) => bn.toNumber())
+      const passData = await Promise.all(tokenIds.map((id) => SSA.getPassdata(id)))
 
-    const passData = await Promise.all(tokenIds.map((id) => SSA.getPassdata(id)))
+      return _.map(passData, (p) => ({
+        name: generalInfo.subName,
+        w3name: generalInfo.subW3name,
+        address: SSA.address,
+        active: p.active,
+        passBalance: p.passBalance.toString(),
+        balanceTimestamp: p.balanceTimestamp.toString(),
+        flowRate: p.flowRate.toString(),
+        tier: p.tier.toNumber(),
+        toNextTier: p.toNextTier.toString(),
+        availableTiers: _.map(generalInfo.subTiers, (t) => t.toString()),
+      })) as Array<TSubscription>
+    }
 
-    return _.map(passData, (p) => ({
-      name: generalInfo.subName,
-      w3name: generalInfo.subW3name,
-      address: SSA.address,
-      active: p.active,
-      passBalance: p.passBalance.toString(),
-      balanceTimestamp: p.balanceTimestamp.toString(),
-      flowRate: p.flowRate.toString(),
-      tier: p.tier.toNumber(),
-      toNextTier: p.toNextTier.toString(),
-      availableTiers: _.map(generalInfo.subTiers, (t) => t.toString()),
-    })) as Array<TSubscription>
+    const allPassData = await Promise.all([OXDOG_SSA, BREAD_SSA, MEV_SSA].map((SSA) => loadSSA(SSA)))
+
+    return _.flatten(allPassData).sort((a, _b) => (a.active ? -1 : 1))
   } catch (e) {
     console.error('error', e)
     return []

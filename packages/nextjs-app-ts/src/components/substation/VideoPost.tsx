@@ -8,7 +8,7 @@ interface VideoPostProps {
 
 export const VideoPost: React.FC<VideoPostProps> = ({ post }) => {
   return (
-    <div className="relative max-w-3xl p-4 bg-gray-50">
+    <div className="relative w-full max-w-3xl p-4 bg-gray-50">
       <div className="absolute -left-2 -top-2 w-4 h-4 rounded-full bg-green-400" />
       <div className="absolute left-0 -top-0 w-32 h-0.5  bg-green-400" />
 
