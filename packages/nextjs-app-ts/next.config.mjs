@@ -16,22 +16,15 @@ const nextConfig = {
       ...config.resolve.alias,
       // -------------------------------------------
       // your aliases
-      'eth-hooks': resolve(__dirname, './node_modules/eth-hooks'),
-      'eth-components': resolve(__dirname, './node_modules/eth-components'),
-      'react-css-theme-switcher': resolve(__dirname, './node_modules/react-css-theme-switcher'),
       react: resolve(__dirname, './node_modules/react'),
       'react-dom': resolve(__dirname, './node_modules/react-dom'),
+      'react-css-theme-switcher': resolve(__dirname, './node_modules/react-css-theme-switcher'),
+      'eth-components': resolve(__dirname, './node_modules/eth-components'),
+      'eth-hooks': resolve(__dirname, './node_modules/eth-hooks'),
       // -------------------------------------------
     }
     return config
   },
-  // typescript: {
-  //   // !! WARN !!
-  //   // Dangerously allow production builds to successfully complete even if
-  //   // your project has type errors.
-  //   // !! WARN !!
-  //   ignoreBuildErrors: true,
-  // },
 }
 
 export default nextConfig
