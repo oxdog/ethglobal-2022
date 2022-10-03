@@ -23,7 +23,7 @@ tenderly.yaml
 
 # secrets / env
 **/.env.*.local
-
+**/.env
 **/*.secret
 **/aws.json
 !packages/hardhat-ts/mnemonics/README.md
