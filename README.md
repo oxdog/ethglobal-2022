@@ -34,4 +34,4 @@ Check out [Eth Global 2022 Showcase](https://ethglobal.com/showcase/supersub-5sq
 
 <br/>
 
-## Follow me on Twitter [@the_oxdog](https://twitter.com/the_oxdog) 🐦
+### Follow me on Twitter [@the_oxdog](https://twitter.com/the_oxdog)!
