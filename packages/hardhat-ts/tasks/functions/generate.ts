@@ -9,6 +9,7 @@ import { task } from 'hardhat/config'
 import { debugLog } from 'tasks/functions/debug'
 
 import { mnemonicPath } from './mnemonic'
+import mkdirp from 'mkdirp'
 
 task('generate', 'Create a mnemonic for builder deploys', async (_, _hre) => {
   const mnemonic = generateMnemonic()
@@ -26,6 +27,8 @@ task('generate', 'Create a mnemonic for builder deploys', async (_, _hre) => {
   const address = `0x${privateToAddress(wallet.getPrivateKey()).toString('hex')}`
   console.log(`🔐 Account Generated as ${address} and set as mnemonic in packages/hardhat`)
   console.log("💬 Use 'yarn account' to get more information about the deployment account.")
+
+  await mkdirp('./generated/')
 
   fs.writeFileSync(`./generated/${address}.secret`, mnemonic.toString())
   fs.writeFileSync(mnemonicPath, mnemonic.toString())

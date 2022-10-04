@@ -65,11 +65,13 @@
     "hardhat-tracer": "^1.1.0-rc.6",
     "hardhat-watcher": "^2.3.0",
     "ipfs-http-client": "^54.0.2",
+    "mkdirp": "^1.0.4",
     "qrcode-terminal": "^0.12.0",
     "typechain": "^8.1.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.1",
+    "@types/mkdirp": "^1",
     "@types/mocha": "^9.1.1",
     "@types/node": "^16.11.47",
     "@types/qrcode-terminal": "^0.12.0",
