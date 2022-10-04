@@ -49,7 +49,6 @@ const targetNetwork: TNetworkNames = process.env.NEXT_PUBLIC_TARGET_NETWORK as T
 invariant.log('NEXT_PUBLIC_TARGET_NETWORK', process.env.NEXT_PUBLIC_TARGET_NETWORK)
 invariant(NETWORKS[targetNetwork] != null, `Invalid target network: ${targetNetwork}`)
 
-// @ts-ignore
 export const TARGET_NETWORK_INFO: TNetworkInfo = NETWORKS[targetNetwork]
 if (DEBUG) console.log(`📡 Connecting to ${TARGET_NETWORK_INFO.name}`)
 
