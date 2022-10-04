@@ -20,10 +20,15 @@ Check out [Eth Global 2022 Showcase](https://ethglobal.com/showcase/supersub-5sq
    yarn install
    ```
 
-2. run the app
+2. Generate Contract Types 
+   ```bash
+   yarn generate
+   yarn compile
+   ```
+
+3. run the app
 
    ```bash
-   # start nextjs
    yarn start
    ```
 
