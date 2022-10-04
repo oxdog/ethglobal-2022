@@ -249,9 +249,17 @@ export const SubstationFeedPage: React.FC<SubstationFeedPageProps> = ({ tierData
               {tierData.map((data) => {
                 const isSelected = selectedTier === data.tier
                 if (decryptedPosts[`tier${data.tier}`]) {
-                  return <div className={isSelected ? '' : 'hidden'}>{renderTierData(data.tier)}</div>
+                  return (
+                    <div key={`tier${data.tier}`} className={isSelected ? '' : 'hidden'}>
+                      {renderTierData(data.tier)}
+                    </div>
+                  )
                 } else {
-                  return <div className={isSelected ? '' : 'hidden'}>{renderUnlockPrompt(data.tier)}</div>
+                  return (
+                    <div key={`tier${data.tier}`} className={isSelected ? '' : 'hidden'}>
+                      {renderUnlockPrompt(data.tier)}
+                    </div>
+                  )
                 }
               })}
             </div>

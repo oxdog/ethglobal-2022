@@ -1,19 +1,12 @@
 /* eslint-disable unused-imports/no-unused-vars-ts */
 import { transactor } from 'eth-components/functions'
 import { EthComponentsSettingsContext } from 'eth-components/models'
-import {
-  useBalance,
-  useBlockNumber,
-  useEthersAdaptorFromProviderOrSigners,
-  useGasPrice,
-  useSignerAddress,
-} from 'eth-hooks'
+import { useBalance, useBlockNumber, useEthersAdaptorFromProviderOrSigners, useSignerAddress } from 'eth-hooks'
 import { useEthersAppContext } from 'eth-hooks/context'
 import { mergeDefaultUpdateOptions } from 'eth-hooks/functions'
 import { ethers } from 'ethers'
 import { useContext, useEffect } from 'react'
 
-import { getNetworkInfo } from '~common/functions'
 import { IScaffoldAppProviders } from '~common/models/IScaffoldAppProviders'
 
 const DEBUG = false
@@ -70,7 +63,8 @@ export const useScaffoldHooksExamples = (scaffoldAppProviders: IScaffoldAppProvi
   // const myMainnetDAIBalance = useContractReader(mainnetDai, mainnetDai?.balanceOf, [myAddress ?? ''])
 
   // 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation
-  const [gasPrice] = useGasPrice(ethersAppContext.chainId, 'fast', getNetworkInfo(ethersAppContext.chainId))
+  // const [gasPrice] = useGasPrice(ethersAppContext.chainId, 'fast', getNetworkInfo(ethersAppContext.chainId))
+  const gasPrice = 1
 
   // ---------------------
   // 📛 call ens

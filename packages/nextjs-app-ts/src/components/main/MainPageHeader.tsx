@@ -2,7 +2,6 @@ import { getNetwork } from '@ethersproject/networks'
 import { Alert, PageHeader } from 'antd'
 import { Account } from 'eth-components/ant'
 import { EthComponentsSettingsContext } from 'eth-components/models'
-import { useGasPrice } from 'eth-hooks'
 import {
   useEthersAppContext,
   connectorErrorText,
@@ -14,7 +13,6 @@ import React, { FC, ReactElement, ReactNode, useCallback, useContext } from 'rea
 
 import { FaucetHintButton } from '~common/components'
 import { useAntNotification } from '~common/components/hooks'
-import { getNetworkInfo } from '~common/functions'
 import { IScaffoldAppProviders } from '~common/models'
 import { FAUCET_ENABLED } from '~~/config/app.config'
 
@@ -38,7 +36,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
   const notification = useAntNotification()
 
   // 🔥 This hook will get the price of Gas from ⛽️ EtherGasStation
-  const [gasPrice] = useGasPrice(ethersAppContext.chainId, 'fast', getNetworkInfo(ethersAppContext.chainId))
+  // const [gasPrice] = useGasPrice(ethersAppContext.chainId, 'fast', getNetworkInfo(ethersAppContext.chainId))
 
   /**
    * this shows the page header and other informaiton
@@ -108,7 +106,7 @@ export const MainPageHeader: FC<IMainPageHeaderProps> = (props) => {
       <FaucetHintButton
         ethComponentSettings={settingsContext}
         scaffoldAppProviders={props.scaffoldAppProviders}
-        gasPrice={gasPrice}
+        gasPrice={1}
         faucetEnabled={FAUCET_ENABLED}
       />
       {props.children}
