@@ -1,5 +1,9 @@
 # 🥪 Supersub - An EthGlobal 2022 Project
 
+``
+Note: The Sourcecode in this Repo is "Hackathon-Quality"
+``
+
 ## What are Supersubs?  🥪
 
 Supersubs are superfluid and tradable Subscriptions that unlock more exclusive content the longer they run.
